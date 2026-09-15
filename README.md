@@ -67,7 +67,7 @@ Every stage appends an audit event, so the UI shows the actual investigation seq
 - LangGraph orchestration
 - PyMuPDF and python-docx parsing
 - BM25 lexical retrieval
-- Configurable dense retrieval boundary with a deterministic local fallback
+- OpenAI `text-embedding-3-small` dense retrieval with a deterministic local fallback
 - Tavily web discovery with graceful fallback
 - Optional OpenAI structured report reasoning
 - SQLite persistence

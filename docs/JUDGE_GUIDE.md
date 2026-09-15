@@ -166,9 +166,9 @@ Every `.txt` file in `data/corpus/` is split into source units and indexed at ap
 
 #### Dense retrieval
 
-The current default dense provider is a deterministic local hash-vector fallback. It keeps the project runnable without downloading a model. It is explicitly a retrieval signal, not a semantic plagiarism verdict.
+The default dense provider is OpenAI `text-embedding-3-small`, configured through `OPENAI_API_KEY` and `EMBEDDING_MODEL`. Source passages are embedded in a batch when the index is created, and each submission unit is embedded when searched.
 
-The `EmbeddingIndex` interface can later be backed by Sentence Transformers or another embedding provider.
+If the key is missing or the embedding request fails, `EmbeddingIndex` switches to a deterministic local hash-vector fallback. The provider name and failure category are visible in the audit trail. Both are retrieval signals, not semantic plagiarism verdicts.
 
 #### Web retrieval
 

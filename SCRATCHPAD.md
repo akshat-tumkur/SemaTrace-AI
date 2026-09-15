@@ -22,7 +22,7 @@ Phase 1 MVP complete: parser, lexical+dense retrieval, Tavily investigation, Lan
 - SQLite persists analyses, units, matches, and audit events across process restarts.
 - Dedicated persisted matches endpoint is available.
 - BM25 and dense retrieval candidates are merged by unit/source with a transparent retrieval score.
-- Dense retrieval defaults to a deterministic local fallback; the provider boundary is ready for sentence-transformers.
+- Dense retrieval now defaults to OpenAI `text-embedding-3-small` through `OPENAI_API_KEY`; deterministic hash vectors remain a provider-failure fallback.
 - Tavily web investigation loads the root `.env`, is bounded by `TAVILY_MAX_UNITS` and `TAVILY_MAX_RESULTS`, and degrades to local retrieval on provider failure.
 - Real configured-key smoke test recorded `searched_web`; no usable web passages were returned for the small demo document, while local candidates remained available.
 - LangGraph now owns the decomposer -> investigator -> verifier -> filter -> citation -> judge graph.
@@ -87,6 +87,8 @@ Phase 1 MVP complete: parser, lexical+dense retrieval, Tavily investigation, Lan
 - Report endpoint returned persisted JSON report fields.
 - `npm run build` passed with report download control.
 - OpenAI live smoke test passed with the configured `gpt-4` model after request compatibility fix.
+- OpenAI embedding smoke test selected `provider=openai` with the configured environment.
+- Embedding fallback rebuilds source vectors to avoid mixing OpenAI and hash-vector dimensions.
 - Evidence-quality regression suite passed: unrelated retrieval candidates are not confirmed.
 - Demo output reduced 10 retrieved candidates to 4 verified matches (2 strong, 2 possible paraphrases).
 - Exact copied-source regression passes when a Wikipedia-like source is indexed directly.

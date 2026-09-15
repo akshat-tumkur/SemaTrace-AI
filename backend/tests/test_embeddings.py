@@ -9,8 +9,10 @@ def test_dense_index_returns_related_passage() -> None:
         CorpusDocument("finance", "Finance", "local://finance", "Financial systems manage transaction risk."),
     ])
 
-    matches = EmbeddingIndex(corpus).search("speaker audio cloning")
+    index = EmbeddingIndex(corpus, api_key="")
+    matches = index.search("speaker audio cloning")
 
+    assert index.provider == "deterministic-hash-fallback"
     assert matches[0].source_id == "voice"
     assert matches[0].semantic_score > 0
 
