@@ -66,13 +66,17 @@ export default function App() {
 
   async function indexSource() {
     if (!sourceFile || !sourceTitle || !sourceUrl) return
-    const body = new FormData()
-    body.append('file', sourceFile)
-    body.append('title', sourceTitle)
-    body.append('url', sourceUrl)
-    const response = await fetch(`${API_URL}/api/sources`, { method: 'POST', body })
-    const payload = await response.json()
-    setSourceMessage(response.ok ? `Indexed ${payload.units_indexed} source units` : payload.detail ?? 'Source indexing failed')
+    try {
+      const body = new FormData()
+      body.append('file', sourceFile)
+      body.append('title', sourceTitle)
+      body.append('url', sourceUrl)
+      const response = await fetch(`${API_URL}/api/sources`, { method: 'POST', body })
+      const payload = await response.json()
+      setSourceMessage(response.ok ? `Indexed ${payload.units_indexed} source units` : payload.detail ?? 'Source indexing failed')
+    } catch {
+      setSourceMessage('Backend unavailable. Start the API on port 8000.')
+    }
   }
 
   return (
@@ -92,7 +96,7 @@ export default function App() {
           <label className="dropzone">
             <input type="file" accept=".txt,.pdf,.docx" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
             <Upload size={28} />
-            <strong>{file ? file.name : 'Choose a UTF-8 text file'}</strong>
+            <strong>{file ? file.name : 'Choose a TXT, PDF, or DOCX file'}</strong>
             <span>{file ? `${(file.size / 1024).toFixed(1)} KB ready` : 'TXT, PDF, and DOCX supported'}</span>
           </label>
           <button className="primary-button" disabled={!file || busy} onClick={runAnalysis}>

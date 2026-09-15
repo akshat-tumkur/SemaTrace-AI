@@ -19,10 +19,7 @@ class ParsedDocument:
 def parse_document(filename: str, content: bytes) -> ParsedDocument:
     extension = Path(filename).suffix.lower()
     if extension == ".txt":
-        try:
-            text = content.decode("utf-8")
-        except UnicodeDecodeError as error:
-            raise HTTPException(status_code=415, detail="Text files must be UTF-8 encoded.") from error
+        text = _decode_text_file(content)
     elif extension == ".pdf":
         text = _parse_pdf(content)
     elif extension == ".docx":
@@ -55,3 +52,15 @@ def _parse_docx(content: bytes) -> str:
 def _normalize_text(text: str) -> str:
     lines = [" ".join(line.split()) for line in text.splitlines()]
     return "\n".join(line for line in lines if line).strip()
+
+
+def _decode_text_file(content: bytes) -> str:
+    for encoding in ("utf-8-sig", "utf-16", "cp1252"):
+        try:
+            return content.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    try:
+        return content.decode("cp1252", errors="replace")
+    except (LookupError, UnicodeError) as error:
+        raise HTTPException(status_code=415, detail="The text file encoding is not supported.") from error
