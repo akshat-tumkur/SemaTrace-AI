@@ -1,0 +1,1 @@
+Voice cloning systems can recreate a speaker's voice using only a few seconds of recorded audio. These synthetic voice tools have increased the scale of impersonation scams and make identity verification more difficult.
