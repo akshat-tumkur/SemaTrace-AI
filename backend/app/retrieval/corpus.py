@@ -11,7 +11,7 @@ CORPUS_PATH = Path(__file__).resolve().parents[3] / "data" / "corpus"
 def load_local_corpus(path: Path = CORPUS_PATH) -> LocalCorpus:
     documents: list[CorpusDocument] = []
     for source_path in sorted(path.glob("*.txt")):
-        text = source_path.read_text(encoding="utf-8").strip()
+        text = _read_source_text(source_path)
         for index, unit in enumerate(split_into_units(text), start=1):
             documents.append(
                 CorpusDocument(
@@ -22,6 +22,16 @@ def load_local_corpus(path: Path = CORPUS_PATH) -> LocalCorpus:
                 )
             )
     return LocalCorpus(documents)
+
+
+def _read_source_text(source_path: Path) -> str:
+    content = source_path.read_bytes()
+    for encoding in ("utf-8-sig", "utf-16", "cp1252"):
+        try:
+            return content.decode(encoding).strip()
+        except UnicodeDecodeError:
+            continue
+    return content.decode("utf-8", errors="replace").strip()
 
 
 def add_source_to_corpus(corpus: LocalCorpus, source_id: str, title: str, url: str, text: str) -> LocalCorpus:
