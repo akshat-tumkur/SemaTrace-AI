@@ -1,13 +1,8 @@
 # SemaTrace AI - Project Documentation
 
-This document is the single reference for what SemaTrace AI is, how it is implemented, and why it was built the way it was. It is written against the code as it exists in this repository, not against the original specification. Where the implementation deliberately differs from the plan in `implementation_plan.md`, the difference is called out in Section 12.
+This document is the single reference for what SemaTrace AI is, how it is implemented, and why it was built the way it was. It is written against the code as it exists in this repository, not against the original hackathon specification. Where the implementation deliberately differs from that original plan, the difference is called out in Section 12.
 
-Companion documents:
-
-- `README.md`: quick start and demo instructions.
-- `docs/JUDGE_GUIDE.md`: presentation-oriented walkthrough and talking points.
-- `implementation_plan.md`: the original hackathon specification (2,600 lines).
-- `SCRATCHPAD.md`: running handoff notes and validation history.
+Companion document: `README.md` for quick start and demo instructions.
 
 ---
 
@@ -121,13 +116,10 @@ Each stage of the pipeline is a named agent with one responsibility and a shared
 ```text
 SemaTrace-AI/
 ├── README.md                     Quick start, demo script, API table
-├── implementation_plan.md        Original hackathon specification
-├── SCRATCHPAD.md                 Handoff notes and validation history
 ├── docker-compose.yml            Two-service local stack
 ├── .env.example                  Environment variable template
 ├── .gitignore
 ├── docs/
-│   ├── JUDGE_GUIDE.md            Presentation walkthrough
 │   └── PROJECT_DOCUMENTATION.md  This file
 ├── data/
 │   ├── corpus/                   Permanent local source corpus (.txt)
@@ -139,7 +131,6 @@ SemaTrace-AI/
 │   └── app.db                    SQLite database (generated, git-ignored)
 ├── backend/
 │   ├── Dockerfile
-│   ├── README.md
 │   ├── requirements.txt
 │   ├── pytest.ini
 │   ├── app/
@@ -253,7 +244,7 @@ The `EmbeddingIndex` is **not** a singleton. It is built inside the investigator
 
 ### 5.2 Configuration (`config.py`)
 
-`ROOT_PATH` resolves to the repository root (`parents[2]` of `backend/app/config.py`) and `.env` is loaded from there. This was a bug fix recorded in the scratchpad: an earlier version resolved the wrong directory and silently ignored the `.env` file.
+`ROOT_PATH` resolves to the repository root (`parents[2]` of `backend/app/config.py`) and `.env` is loaded from there. This was a bug fix made during development: an earlier version resolved the wrong directory and silently ignored the `.env` file.
 
 Settings are plain module constants read once at import:
 
@@ -913,7 +904,7 @@ The audit log is therefore also a **capability report**: reading the Embedding R
 
 The workflow tests construct a `LocalCorpus` of one or two `CorpusDocument`s inline and call `run_investigation` directly. This is the main reason the entry point takes the corpus and providers as parameters instead of reading globals.
 
-`test_evaluation.py` is structured as a table of labelled cases so that new behaviours (paraphrase, cited copy) can be added as rows. Expanding this table is the first item in the scratchpad's "next recommended slice".
+`test_evaluation.py` is structured as a table of labelled cases so that new behaviours (paraphrase, cited copy) can be added as rows. Expanding this table is the recommended next step for evaluation.
 
 Frontend verification is `npm run build`, which type-checks the single component against the response contract. There are no frontend unit tests.
 
@@ -979,7 +970,7 @@ The repository has five commits on `main`:
 | `d213703` | Fix legacy text document uploads |
 | `01aa432` | Use OpenAI embeddings for dense retrieval |
 
-`SCRATCHPAD.md` records the finer-grained slices that preceded the first commit: TXT-only parsing and a baseline analyzer; PDF and DOCX; BM25; the six-agent synchronous workflow; SQLite; dense retrieval and the merger; Tavily; LangGraph taking over orchestration; OpenAI reasoning; verification tightening; the source-indexing endpoint; the `.env` root-path fix; the `gpt-4` `response_format` compatibility fix; the health and report endpoints; and the controlled evaluation fixtures. Each slice was validated with `pytest -q` and `npm run build`, and the scratchpad lists the test count after each.
+The development notes kept during the hackathon recorded the finer-grained slices that preceded the first commit: TXT-only parsing and a baseline analyzer; PDF and DOCX; BM25; the six-agent synchronous workflow; SQLite; dense retrieval and the merger; Tavily; LangGraph taking over orchestration; OpenAI reasoning; verification tightening; the source-indexing endpoint; the `.env` root-path fix; the `gpt-4` `response_format` compatibility fix; the health and report endpoints; and the controlled evaluation fixtures. Each slice was validated with `pytest -q` and `npm run build`, and the notes tracked the test count after each.
 
 The most recent change replaced the hash projection as the default dense provider with OpenAI `text-embedding-3-small`, demoting the hash method to a fallback and adding the rebuild-on-fallback logic so that query and corpus vectors never mix dimensions.
 
