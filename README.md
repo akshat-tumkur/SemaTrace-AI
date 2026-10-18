@@ -6,7 +6,7 @@ SemaTrace AI goes beyond exact string matching. It decomposes a document into se
 
 The system does not claim to mathematically prove plagiarism. It produces a transparent similarity assessment for human review.
 
-For the complete architecture and judge preparation guide, read [docs/JUDGE_GUIDE.md](docs/JUDGE_GUIDE.md).
+For the complete project details, implementation walkthrough, and architectural decisions, read [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md).
 
 ## What It Does
 
@@ -220,7 +220,4 @@ A retrieval score is not a plagiarism probability. Only verified matches appear 
 
 ## Repository Guide
 
-- [docs/JUDGE_GUIDE.md](docs/JUDGE_GUIDE.md): full architecture, workflow, formulas, troubleshooting, and judge preparation
 - [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md): complete project details, implementation walkthrough, scoring formulas, and architectural decisions with rationale
-- [implementation_plan.md](implementation_plan.md): original hackathon specification
-- [SCRATCHPAD.md](SCRATCHPAD.md): shared handoff notes for Copilot, Codex, Claude, and teammates
