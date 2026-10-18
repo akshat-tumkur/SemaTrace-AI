@@ -221,5 +221,6 @@ A retrieval score is not a plagiarism probability. Only verified matches appear 
 ## Repository Guide
 
 - [docs/JUDGE_GUIDE.md](docs/JUDGE_GUIDE.md): full architecture, workflow, formulas, troubleshooting, and judge preparation
+- [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md): complete project details, implementation walkthrough, scoring formulas, and architectural decisions with rationale
 - [implementation_plan.md](implementation_plan.md): original hackathon specification
 - [SCRATCHPAD.md](SCRATCHPAD.md): shared handoff notes for Copilot, Codex, Claude, and teammates
