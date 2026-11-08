@@ -1,0 +1,4 @@
+# Required CPU document retrieval for the offline V3 detector.
+onnxruntime==1.32.0
+numpy==2.5.5
+tokenizers==0.23.3
