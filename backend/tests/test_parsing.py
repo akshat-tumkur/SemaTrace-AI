@@ -1,8 +1,12 @@
 from io import BytesIO
 
+
 from docx import Document
 
+
 from app.parsing.document import parse_document
+
+
 from app.parsing.sentences import split_into_units
 
 
