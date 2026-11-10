@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 from app.retrieval.corpus import load_local_corpus
 
 

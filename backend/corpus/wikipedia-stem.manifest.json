@@ -1,0 +1,142 @@
+{
+  "collection": "wikipedia_en",
+  "entries": [
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Information_retrieval",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-14T21:27:17Z",
+      "page_id": 15271,
+      "revision_id": 1385708733,
+      "title": "Information retrieval",
+      "url": "https://en.wikipedia.org/wiki/Information_retrieval",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1385708733"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Inverted_index",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-05-17T11:11:10Z",
+      "page_id": 3125116,
+      "revision_id": 1354610034,
+      "title": "Inverted index",
+      "url": "https://en.wikipedia.org/wiki/Inverted_index",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1354610034"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Machine_learning",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-07T20:01:34Z",
+      "page_id": 233488,
+      "revision_id": 1384336237,
+      "title": "Machine learning",
+      "url": "https://en.wikipedia.org/wiki/Machine_learning",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1384336237"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Natural_language_processing",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-01T04:08:05Z",
+      "page_id": 21652,
+      "revision_id": 1383133655,
+      "title": "Natural language processing",
+      "url": "https://en.wikipedia.org/wiki/Natural_language_processing",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1383133655"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Photovoltaics",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-10-27T18:53:46Z",
+      "page_id": 652531,
+      "revision_id": 1382275881,
+      "title": "Photovoltaics",
+      "url": "https://en.wikipedia.org/wiki/Photovoltaics",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1382275881"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Reservoir",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-15T02:29:36Z",
+      "page_id": 3292675,
+      "revision_id": 1385758095,
+      "title": "Reservoir",
+      "url": "https://en.wikipedia.org/wiki/Reservoir",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1385758095"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Search_engine_indexing",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-01T19:21:58Z",
+      "page_id": 7602386,
+      "revision_id": 1383251652,
+      "title": "Search engine indexing",
+      "url": "https://en.wikipedia.org/wiki/Search_engine_indexing",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1383251652"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Soil_erosion",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-16T02:55:12Z",
+      "page_id": 59416,
+      "revision_id": 1385953305,
+      "title": "Soil erosion",
+      "url": "https://en.wikipedia.org/wiki/Soil_erosion",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1385953305"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Solar_cell",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-12T18:09:44Z",
+      "page_id": 2352910,
+      "revision_id": 1385301599,
+      "title": "Solar cell",
+      "url": "https://en.wikipedia.org/wiki/Solar_cell",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1385301599"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Text_mining",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-01T19:32:14Z",
+      "page_id": 318439,
+      "revision_id": 1383253930,
+      "title": "Text mining",
+      "url": "https://en.wikipedia.org/wiki/Text_mining",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1383253930"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Water_cycle",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-08-07T22:11:22Z",
+      "page_id": 200167,
+      "revision_id": 1368240581,
+      "title": "Water cycle",
+      "url": "https://en.wikipedia.org/wiki/Water_cycle",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1368240581"
+    },
+    {
+      "attribution_url": "https://en.wikipedia.org/wiki/Wetland",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "modified_at": "2026-11-02T10:07:16Z",
+      "page_id": 102024,
+      "revision_id": 1383373444,
+      "title": "Wetland",
+      "url": "https://en.wikipedia.org/wiki/Wetland",
+      "version_url": "https://en.wikipedia.org/w/index.php?oldid=1383373444"
+    }
+  ],
+  "extractor_version": "wikimedia-prose-html-v1",
+  "format_version": 1,
+  "license_basis": "Wikimedia site rights and reuse terms; prose only; attribution notices preserved; no non-text licenses inferred.",
+  "resolve_failures": [],
+  "terms_url": "https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use"
+}

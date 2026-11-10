@@ -1,0 +1,7 @@
+{
+  "description": "Small English Wikipedia STEM starter; free revision-pinned API import, not a bulk dump or benchmark.",
+  "titles": [
+    "Information retrieval", "Search engine indexing", "Inverted index", "Natural language processing", "Text mining", "Machine learning",
+    "Water cycle", "Reservoir", "Wetland", "Soil erosion", "Solar cell", "Photovoltaics"
+  ]
+}
