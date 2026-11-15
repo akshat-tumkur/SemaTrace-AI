@@ -1,0 +1,20 @@
+{
+  "status": "successful user-executed training-only pilot; full campaign declined for resource cost",
+  "provenance": "Transcribed from user report on 2026-11-20, not a locally observed GPU run. Raw pilot.json was not supplied.",
+  "gpu": "Tesla T4",
+  "python": "3.13.16",
+  "packages": {"torch":"2.6.0+cu124","transformers":"4.51.3","tokenizers":"0.21.1","numpy":"2.2.6","scikit-learn":"1.6.1","scipy":"1.15.3","PyYAML":"6.0.2","onnx":"1.18.0","onnxruntime":"1.20.1","safetensors":"0.8.0","huggingface-hub":"0.36.2"},
+  "training_examples": 256,
+  "optimizer_steps": 8,
+  "initial_loss": 0.739351,
+  "final_loss": 0.383762,
+  "nonzero_transformer_gradients_verified": true,
+  "checkpoint_reload_verified": true,
+  "seconds": 31.483,
+  "examples_per_second": 8.131,
+  "peak_cuda_mib": 2422.29,
+  "peak_rss_mib": 2903.34,
+  "estimated_full_training_hours": 147.68,
+  "accuracy_claim": false,
+  "decision": "One authorized computational adaptation: fixed approximately 30000-example official-training subset with measured AMP throughput. Preserve original data/config/notebook and fresh evaluation partitions."
+}
