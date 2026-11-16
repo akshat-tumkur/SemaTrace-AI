@@ -1,0 +1,39 @@
+campaign: arc-roberta-practical-30k-v1
+model: FacebookAI/roberta-base
+revision: e2da8e2f811d1448a5b465c236feacd80ffbac7b
+seed: 20261120
+max_length: 512
+epochs: 3
+learning_rate: 0.00002
+original_positive_weight: 5.0
+positive_weight_policy: preserve_original_aggregate_weighted_class_ratio
+effective_batch_size: 32
+micro_batch_size: 8
+evaluation_batch_size: 8
+gradient_checkpointing: false
+precision: fp16
+pad_to_multiple_of: 8
+length_group_size: 1024
+checkpoint_seconds: 600
+session_seconds: 10800
+maximum_estimated_training_hours: 4.0
+pilot_warmup_steps: 4
+pilot_measured_steps: 32
+published_threshold: 0.39
+sampling:
+  positive_low_overlap: 1500
+  positive_other: 1500
+  negative_related_high_overlap: 6000
+  negative_positive_section_high_overlap: 6000
+  negative_related_other: 9000
+  negative_positive_section_other: 6000
+  high_negative_overlap_quantile: 0.75
+  length_quartiles: 4
+  maximum_per_source_family: 60
+  maximum_positive_per_source_family: 6
+acceptance:
+  sentence_f1_gain_over_tfidf: 0.05
+  automatic_precision: 0.80
+  automatic_recall: 0.20
+  negative_document_fpr: 0.10
+  minimum_predicted_positive_sentences: 30

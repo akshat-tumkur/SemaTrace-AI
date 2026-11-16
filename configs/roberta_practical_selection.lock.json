@@ -1,0 +1,12 @@
+{
+  "campaign": "arc-roberta-practical-30k-v1",
+  "selection_sha256": "bb912bc3304fa6f497a8a4fb33c2ced196f9b188ac70ed3716d8ff5cf2054640",
+  "examples": 30000,
+  "positives": 3000,
+  "negative": 27000,
+  "frozen_split_sha256": {
+    "train": "6f2f554837e64a5dfed4952d6c4a4c77e42743d0f157a82fc8897750f92b8ec8",
+    "val": "77a1df2b17601e3c0bcc63820b97bb681769d879559d0d94029593caded213a8",
+    "final": "43bcd85df3e2032e6990e01197208bb8de79417dce722fa7eb70a1d870486cb6"
+  }
+}

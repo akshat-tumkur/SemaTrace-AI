@@ -1,0 +1,12 @@
+# User's successful Python3.13 Colab environment; Torch installed from cu124.
+torch==2.6.0
+transformers==4.51.3
+tokenizers==0.21.1
+numpy==2.2.6
+scikit-learn==1.6.1
+scipy==1.15.3
+PyYAML==6.0.2
+onnx==1.18.0
+onnxruntime==1.20.1
+safetensors==0.8.0
+huggingface-hub==0.36.2
