@@ -1,0 +1,348 @@
+{
+  "integrity": {
+    "archive_sha256": "57416fbaeffcf7087a8c45955913d6d83da55af33b6b5eff6225cb9e2b1762e7",
+    "archive_bytes": 442455306,
+    "weights_sha256": "c5c38ed47631933df1e2fa6069e2247cc0310630ad1b14821bdc0b8b581d636b",
+    "archive_crc_and_extraction_verified": true,
+    "internal_hashes_and_seals_verified": true,
+    "training_code_identity_verified": true,
+    "epochs": 3,
+    "selected_epoch": 3,
+    "training_optimizer_steps": 2814,
+    "training_seconds": 924.4190888039991,
+    "validation_epoch_f1": [
+      0.3984375,
+      0.3934010152284264,
+      0.4069529652351738
+    ],
+    "automatic_gate": {
+      "passed": false,
+      "validation_automatic_point": null,
+      "gain_requirement": 0.05,
+      "actual_f1_gain_over_tfidf": 0.20125356125356123,
+      "reason": "No validation threshold in the fixed grid met automatic precision, negative-document FPR and minimum positive-prediction constraints."
+    },
+    "limits": [
+      "Archive hash computed locally; no separate sender-provided archive digest supplied for external transport authentication.",
+      "Final raw scores/predictions and TF-IDF fit artifact are not in this return ZIP; aggregate calculations/seals can be checked, full per-example baseline recomputation is unavailable.",
+      "No test threshold sweep, model update or acceptance relaxation performed."
+    ]
+  },
+  "final": {
+    "campaign": "arc-roberta-practical-30k-v1",
+    "adaptation": "Computationally constrained 30000-example full-encoder fine-tuning, not exact reproduction",
+    "seal": {
+      "campaign": "arc-roberta-practical-30k-v1",
+      "selection_sha256": "014167309a0ba25d9c2cae5033f86e06fa4dcf0a48e7fec5fdc478018ee7b949",
+      "frozen_final_sha256": "43bcd85df3e2032e6990e01197208bb8de79417dce722fa7eb70a1d870486cb6"
+    },
+    "methods": {
+      "minilm": {
+        "sentence": {
+          "precision": 0.1628614916286149,
+          "recall": 0.35785953177257523,
+          "f1": 0.22384937238493724,
+          "tp": 107,
+          "fp": 550,
+          "fn": 192,
+          "tn": 7175,
+          "false_positive_rate": 0.07119741100323625
+        },
+        "document": {
+          "precision": 0.7628458498023716,
+          "recall": 0.7201492537313433,
+          "f1": 0.7408829174664108,
+          "tp": 193,
+          "fp": 60,
+          "fn": 75,
+          "tn": 166,
+          "false_positive_rate": 0.26548672566371684
+        },
+        "threshold": 0.54,
+        "low_lexical_overlap": {
+          "precision": 0.12944162436548223,
+          "recall": 0.265625,
+          "f1": 0.17406143344709898,
+          "tp": 51,
+          "fp": 343,
+          "fn": 141,
+          "tn": 6485,
+          "false_positive_rate": 0.05023432923257176,
+          "sentences": 7020,
+          "positive_sentences": 192
+        },
+        "related_negative_sentences": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "tp": 0,
+          "fp": 127,
+          "fn": 0,
+          "tn": 2995,
+          "false_positive_rate": 0.04067905188981422
+        },
+        "ranking": {
+          "map": 0.48102964816165733,
+          "acc@1": 0.332089552238806,
+          "acc@3": 0.5634328358208955,
+          "acc@5": 0.6604477611940298
+        }
+      },
+      "previous-supervised-minilm": {
+        "sentence": {
+          "precision": 0.2064516129032258,
+          "recall": 0.2140468227424749,
+          "f1": 0.21018062397372742,
+          "tp": 64,
+          "fp": 246,
+          "fn": 235,
+          "tn": 7479,
+          "false_positive_rate": 0.031844660194174756
+        },
+        "document": {
+          "precision": 0.7804878048780488,
+          "recall": 0.47761194029850745,
+          "f1": 0.5925925925925926,
+          "tp": 128,
+          "fp": 36,
+          "fn": 140,
+          "tn": 190,
+          "false_positive_rate": 0.1592920353982301
+        },
+        "threshold": 0.12,
+        "low_lexical_overlap": {
+          "precision": 0.1651376146788991,
+          "recall": 0.1875,
+          "f1": 0.17560975609756097,
+          "tp": 36,
+          "fp": 182,
+          "fn": 156,
+          "tn": 6646,
+          "false_positive_rate": 0.026654950205038077,
+          "sentences": 7020,
+          "positive_sentences": 192
+        },
+        "related_negative_sentences": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "tp": 0,
+          "fp": 72,
+          "fn": 0,
+          "tn": 3050,
+          "false_positive_rate": 0.023062139654067906
+        },
+        "ranking": {
+          "map": 0.47971265665754714,
+          "acc@1": 0.3283582089552239,
+          "acc@3": 0.5634328358208955,
+          "acc@5": 0.6902985074626866
+        }
+      },
+      "tfidf": {
+        "sentence": {
+          "precision": 0.1908831908831909,
+          "recall": 0.22408026755852842,
+          "f1": 0.20615384615384616,
+          "tp": 67,
+          "fp": 284,
+          "fn": 232,
+          "tn": 7441,
+          "false_positive_rate": 0.03676375404530744
+        },
+        "document": {
+          "precision": 0.7751479289940828,
+          "recall": 0.48880597014925375,
+          "f1": 0.5995423340961098,
+          "tp": 131,
+          "fp": 38,
+          "fn": 137,
+          "tn": 188,
+          "false_positive_rate": 0.168141592920354
+        },
+        "threshold": 0.11,
+        "low_lexical_overlap": {
+          "precision": 0.12987012987012986,
+          "recall": 0.10416666666666667,
+          "f1": 0.11560693641618497,
+          "tp": 20,
+          "fp": 134,
+          "fn": 172,
+          "tn": 6694,
+          "false_positive_rate": 0.01962507322788518,
+          "sentences": 7020,
+          "positive_sentences": 192
+        },
+        "related_negative_sentences": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "tp": 0,
+          "fp": 71,
+          "fn": 0,
+          "tn": 3051,
+          "false_positive_rate": 0.02274183215887252
+        },
+        "ranking": {
+          "map": 0.44443552027670774,
+          "acc@1": 0.291044776119403,
+          "acc@3": 0.5074626865671642,
+          "acc@5": 0.6455223880597015
+        }
+      },
+      "roberta": {
+        "sentence": {
+          "precision": 0.3548387096774194,
+          "recall": 0.4782608695652174,
+          "f1": 0.4074074074074074,
+          "tp": 143,
+          "fp": 260,
+          "fn": 156,
+          "tn": 7465,
+          "false_positive_rate": 0.03365695792880259
+        },
+        "document": {
+          "precision": 0.8341013824884793,
+          "recall": 0.6753731343283582,
+          "f1": 0.7463917525773196,
+          "tp": 181,
+          "fp": 36,
+          "fn": 87,
+          "tn": 190,
+          "false_positive_rate": 0.1592920353982301
+        },
+        "threshold": 0.74,
+        "low_lexical_overlap": {
+          "precision": 0.30980392156862746,
+          "recall": 0.4114583333333333,
+          "f1": 0.3534675615212528,
+          "tp": 79,
+          "fp": 176,
+          "fn": 113,
+          "tn": 6652,
+          "false_positive_rate": 0.025776215582893967,
+          "sentences": 7020,
+          "positive_sentences": 192
+        },
+        "related_negative_sentences": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "tp": 0,
+          "fp": 49,
+          "fn": 0,
+          "tn": 3073,
+          "false_positive_rate": 0.01569506726457399
+        },
+        "ranking": {
+          "map": 0.659137185967999,
+          "acc@1": 0.5186567164179104,
+          "acc@3": 0.7985074626865671,
+          "acc@5": 0.8880597014925373
+        }
+      }
+    },
+    "automatic_operating_point": null,
+    "f1_gain_over_tfidf": 0.20125356125356123,
+    "research_quality_gate_passed": false,
+    "production_enabled": false,
+    "roberta_inference_seconds": 30.942191829999956,
+    "all_evaluation_seconds": 142.90135508600042,
+    "minilm_truncated_texts": 10,
+    "published_reference_f1": 0.416,
+    "published_score_comparable": false,
+    "remaining_gates": "Local CPU latency/memory, application transfer, source-side passage localization and source-attribution evaluation before integration. ARC sentence labels do not authorize semantic coverage."
+  },
+  "cpu": {
+    "backend": "PyTorch FP32 CPU; no ONNX export/quantization or acceptance bypass",
+    "threads": 2,
+    "python": "3.12.8",
+    "torch": "2.6.0+cpu",
+    "cold_model_and_tokenizer_load_seconds": 8.178658100077882,
+    "model_parameters": 124057346,
+    "all_weights_finite": true,
+    "encoder_layers": 12,
+    "new_delimiter_id": 50265,
+    "profiles": [
+      {
+        "profile": "typical-single",
+        "actual_shape": [
+          1,
+          168
+        ],
+        "seconds": [
+          0.25464130006730556,
+          0.28044110001064837,
+          0.2959994999691844,
+          0.26527629990596324,
+          0.2692294000880793
+        ],
+        "median_batch_seconds": 0.2692294000880793,
+        "pairs_per_second": 3.7143046029625544
+      },
+      {
+        "profile": "typical-eight",
+        "actual_shape": [
+          8,
+          168
+        ],
+        "seconds": [
+          1.775183800025843,
+          2.0197782999603078,
+          1.9391917999600992,
+          2.0335868999827653,
+          1.9469542000442743
+        ],
+        "median_batch_seconds": 1.9469542000442743,
+        "pairs_per_second": 4.108982121828072
+      },
+      {
+        "profile": "long-single",
+        "actual_shape": [
+          1,
+          512
+        ],
+        "seconds": [
+          1.0247150999493897,
+          0.8526159999892116,
+          0.9806051000487059,
+          0.8800214999355376,
+          0.9206972999963909
+        ],
+        "median_batch_seconds": 0.9206972999963909,
+        "pairs_per_second": 1.086133303534093
+      },
+      {
+        "profile": "long-eight",
+        "actual_shape": [
+          8,
+          512
+        ],
+        "seconds": [
+          8.462531300028786,
+          8.494239899911918,
+          8.798396700061858,
+          8.158297100104392,
+          6.984074600040913
+        ],
+        "median_batch_seconds": 8.462531300028786,
+        "pairs_per_second": 0.9453436231276081
+      }
+    ],
+    "peak_working_set_mib": null,
+    "working_set_mib_at_end": null,
+    "scope": "Five warm repeats per profile, actual hash-verified TRAIN text re-tokenized with returned tokenizer. No final/validation scoring or accuracy inference. Excludes retrieval/tokenization/server overhead; CPU contention not isolated.",
+    "initial_cache_check": "First attempt refused mismatching local/Colab NPZ byte hashes. Benchmark uses verified source text instead; no claim about the cause of cache serialization differences."
+  },
+  "separate_memory_probe": {
+    "working_set_mib": 876.578125,
+    "peak_working_set_mib": 1200.7265625,
+    "scope": "Separate process, model/tokenizer load and one synthetic8x512 FP32 CPU inference; includes Python/libraries. Not whole application memory or quality measurement. Timed benchmark memory query had invalid FFI typing and is recorded unavailable.",
+    "threads": 2,
+    "shape": [
+      8,
+      512
+    ]
+  },
+  "product_decision": "Preserve as candidate review/discovery reranker. Autonomous classification gate remains failed; semantic coverage disabled. No retraining, threshold tuning, export, or product integration performed."
+}

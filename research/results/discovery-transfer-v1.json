@@ -1,0 +1,1937 @@
+{
+  "fixture_sha256": "debf0ae5430aed784dca6736a76b3bb197c104a1b1b945b4a86d3758d6343276",
+  "model_checkpoint_sha256": "c5c38ed47631933df1e2fa6069e2247cc0310630ad1b14821bdc0b8b581d636b",
+  "protocol": "correct source-passage MRR and Hit@1,3,5 on 16 positive queries; MiniLM top8 vs RoBERTa rerank of same8; negatives have no valid source and must remain review-only",
+  "limitations": "Small synthetic diagnostic, not independent natural plagiarism accuracy. Frozen before inference; no threshold selection.",
+  "negative_queries": 12,
+  "negative_policy": "Ranks always returned even when no source is relevant. No threshold, autonomous match, false-positive classification or semantic coverage is inferred.",
+  "metrics": {
+    "minilm": {
+      "queries": 16,
+      "mrr": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "hit_at_8": 1.0
+    },
+    "roberta": {
+      "queries": 16,
+      "mrr": 0.9375,
+      "hit_at_1": 0.875,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "hit_at_8": 1.0
+    }
+  },
+  "warm_study_seconds": 43.61065819999203,
+  "rows": [
+    {
+      "query_id": "aquifer-paraphrase",
+      "category": "paraphrase",
+      "relevant": [
+        "aquifer-a"
+      ],
+      "minilm": [
+        "aquifer-a",
+        "glacier-a",
+        "aquifer-b",
+        "island-a",
+        "island-b",
+        "glacier-b",
+        "pollination-b",
+        "cache-b"
+      ],
+      "roberta": [
+        "aquifer-a",
+        "aquifer-b",
+        "glacier-a",
+        "island-a",
+        "island-b",
+        "glacier-b",
+        "cache-b",
+        "pollination-b"
+      ],
+      "scores": [
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.6257002767376822,
+          "roberta_margin": -3.05344820022583
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.3860461200000149,
+          "roberta_margin": -4.8520660400390625
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.36177885340819993,
+          "roberta_margin": -4.496259689331055
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.2848304542271096,
+          "roberta_margin": -4.872626304626465
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.2496016547384654,
+          "roberta_margin": -4.992551803588867
+        },
+        {
+          "source_id": "glacier-b",
+          "minilm": 0.2420015351204351,
+          "roberta_margin": -5.033384799957275
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.13448483080831503,
+          "roberta_margin": -5.364016532897949
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.07071880369945703,
+          "roberta_margin": -5.354693412780762
+        }
+      ]
+    },
+    {
+      "query_id": "aquifer-partial",
+      "category": "partial",
+      "relevant": [
+        "aquifer-a"
+      ],
+      "minilm": [
+        "aquifer-a",
+        "island-b",
+        "aquifer-b",
+        "pollination-b",
+        "cache-b",
+        "island-a",
+        "cache-a",
+        "glacier-a"
+      ],
+      "roberta": [
+        "aquifer-a",
+        "cache-a",
+        "island-b",
+        "glacier-a",
+        "pollination-b",
+        "island-a",
+        "aquifer-b",
+        "cache-b"
+      ],
+      "scores": [
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.5061510620547555,
+          "roberta_margin": -3.8020427227020264
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.4004491678450252,
+          "roberta_margin": -5.510618209838867
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.3222558051347088,
+          "roberta_margin": -6.172824859619141
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.19046933922540668,
+          "roberta_margin": -5.736821174621582
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.13145326612340436,
+          "roberta_margin": -6.186829566955566
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.10857317889541977,
+          "roberta_margin": -5.846911430358887
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.10704311103503866,
+          "roberta_margin": -5.027115821838379
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.0780612402441583,
+          "roberta_margin": -5.621939182281494
+        }
+      ]
+    },
+    {
+      "query_id": "aquifer-related-independent",
+      "category": "related-independent",
+      "relevant": [],
+      "minilm": [
+        "aquifer-a",
+        "island-b",
+        "aquifer-b",
+        "island-a",
+        "cache-b",
+        "cache-a",
+        "pollination-b",
+        "glacier-a"
+      ],
+      "roberta": [
+        "aquifer-a",
+        "island-a",
+        "cache-b",
+        "glacier-a",
+        "cache-a",
+        "island-b",
+        "aquifer-b",
+        "pollination-b"
+      ],
+      "scores": [
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.28620191244223914,
+          "roberta_margin": -5.032232284545898
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.20188996488807073,
+          "roberta_margin": -5.818079948425293
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.15631155770992408,
+          "roberta_margin": -5.852818012237549
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.12622065312738148,
+          "roberta_margin": -5.37266731262207
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.08644609469581277,
+          "roberta_margin": -5.4586896896362305
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.060306216594911706,
+          "roberta_margin": -5.534440040588379
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.03487325414882282,
+          "roberta_margin": -6.0588178634643555
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.013491760255563479,
+          "roberta_margin": -5.525249481201172
+        }
+      ]
+    },
+    {
+      "query_id": "replication-paraphrase",
+      "category": "paraphrase",
+      "relevant": [
+        "replication-a"
+      ],
+      "minilm": [
+        "replication-a",
+        "cache-a",
+        "cache-b",
+        "replication-b",
+        "glacier-a",
+        "resistance-a",
+        "vaccine-a",
+        "glacier-b"
+      ],
+      "roberta": [
+        "replication-a",
+        "replication-b",
+        "cache-a",
+        "vaccine-a",
+        "cache-b",
+        "resistance-a",
+        "glacier-a",
+        "glacier-b"
+      ],
+      "scores": [
+        {
+          "source_id": "replication-a",
+          "minilm": 0.5822818377354675,
+          "roberta_margin": -3.4927783012390137
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.3859425339665697,
+          "roberta_margin": -5.502680778503418
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.321223479150049,
+          "roberta_margin": -6.248315811157227
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.2833475459368764,
+          "roberta_margin": -5.314659595489502
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.152449015638437,
+          "roberta_margin": -6.801617622375488
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.10018377635795397,
+          "roberta_margin": -6.451484680175781
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.06526558918885797,
+          "roberta_margin": -6.206053733825684
+        },
+        {
+          "source_id": "glacier-b",
+          "minilm": 0.06314174393382596,
+          "roberta_margin": -6.92128849029541
+        }
+      ]
+    },
+    {
+      "query_id": "replication-partial",
+      "category": "partial",
+      "relevant": [
+        "replication-a"
+      ],
+      "minilm": [
+        "replication-a",
+        "replication-b",
+        "cache-b",
+        "cache-a",
+        "pollination-a",
+        "glacier-a",
+        "island-a",
+        "resistance-a"
+      ],
+      "roberta": [
+        "replication-a",
+        "replication-b",
+        "cache-b",
+        "glacier-a",
+        "cache-a",
+        "pollination-a",
+        "island-a",
+        "resistance-a"
+      ],
+      "scores": [
+        {
+          "source_id": "replication-a",
+          "minilm": 0.4829027488568036,
+          "roberta_margin": -2.5812225341796875
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.3355180408647169,
+          "roberta_margin": -4.099982261657715
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.29961358731599336,
+          "roberta_margin": -4.486454963684082
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.26654617481063636,
+          "roberta_margin": -5.013779640197754
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.12367334467682103,
+          "roberta_margin": -5.246077537536621
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.08758984491572058,
+          "roberta_margin": -4.827597141265869
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.07175842573362212,
+          "roberta_margin": -5.412392616271973
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.027907021695915503,
+          "roberta_margin": -5.505587577819824
+        }
+      ]
+    },
+    {
+      "query_id": "replication-related-independent",
+      "category": "related-independent",
+      "relevant": [],
+      "minilm": [
+        "replication-a",
+        "cache-b",
+        "cache-a",
+        "replication-b",
+        "resistance-b",
+        "vaccine-a",
+        "pollination-a",
+        "glacier-a"
+      ],
+      "roberta": [
+        "replication-a",
+        "replication-b",
+        "cache-a",
+        "cache-b",
+        "pollination-a",
+        "vaccine-a",
+        "glacier-a",
+        "resistance-b"
+      ],
+      "scores": [
+        {
+          "source_id": "replication-a",
+          "minilm": 0.32311649359089145,
+          "roberta_margin": -3.994279384613037
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.21345136063602127,
+          "roberta_margin": -5.314822673797607
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.18870889143461198,
+          "roberta_margin": -5.196626663208008
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.15551486649538926,
+          "roberta_margin": -4.864792823791504
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.05683437126885223,
+          "roberta_margin": -6.012066841125488
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.05443529996681549,
+          "roberta_margin": -5.750988960266113
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.030265558576706195,
+          "roberta_margin": -5.749037742614746
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.01517401516148137,
+          "roberta_margin": -5.995516777038574
+        }
+      ]
+    },
+    {
+      "query_id": "vaccine-paraphrase",
+      "category": "paraphrase",
+      "relevant": [
+        "vaccine-a"
+      ],
+      "minilm": [
+        "vaccine-a",
+        "resistance-a",
+        "vaccine-b",
+        "cache-b",
+        "resistance-b",
+        "glacier-a",
+        "pollination-a",
+        "pollination-b"
+      ],
+      "roberta": [
+        "vaccine-a",
+        "vaccine-b",
+        "cache-b",
+        "pollination-a",
+        "resistance-a",
+        "pollination-b",
+        "glacier-a",
+        "resistance-b"
+      ],
+      "scores": [
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.6930344106695885,
+          "roberta_margin": -4.536217212677002
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.4849683881994217,
+          "roberta_margin": -6.446998596191406
+        },
+        {
+          "source_id": "vaccine-b",
+          "minilm": 0.3269441824925574,
+          "roberta_margin": -6.034066677093506
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.1353429351731044,
+          "roberta_margin": -6.269242286682129
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.11578556062273304,
+          "roberta_margin": -6.92874813079834
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.09252458843197756,
+          "roberta_margin": -6.827898979187012
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.07695352440207379,
+          "roberta_margin": -6.398425102233887
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.07105970550482027,
+          "roberta_margin": -6.470614910125732
+        }
+      ]
+    },
+    {
+      "query_id": "vaccine-partial",
+      "category": "partial",
+      "relevant": [
+        "vaccine-a"
+      ],
+      "minilm": [
+        "vaccine-a",
+        "resistance-a",
+        "vaccine-b",
+        "cache-b",
+        "replication-b",
+        "pollination-a",
+        "glacier-a",
+        "cache-a"
+      ],
+      "roberta": [
+        "vaccine-a",
+        "replication-b",
+        "cache-b",
+        "resistance-a",
+        "cache-a",
+        "vaccine-b",
+        "glacier-a",
+        "pollination-a"
+      ],
+      "scores": [
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.7268991786568713,
+          "roberta_margin": -3.178790330886841
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.2197649262995316,
+          "roberta_margin": -5.582245349884033
+        },
+        {
+          "source_id": "vaccine-b",
+          "minilm": 0.15918549130422469,
+          "roberta_margin": -5.730205535888672
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.14133291562693784,
+          "roberta_margin": -5.198394775390625
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.10594927600508049,
+          "roberta_margin": -4.604205131530762
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.08707691996297222,
+          "roberta_margin": -6.303520202636719
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.07985401382876994,
+          "roberta_margin": -5.8910393714904785
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.07753649968544057,
+          "roberta_margin": -5.586436748504639
+        }
+      ]
+    },
+    {
+      "query_id": "vaccine-related-independent",
+      "category": "related-independent",
+      "relevant": [],
+      "minilm": [
+        "vaccine-a",
+        "glacier-a",
+        "cache-a",
+        "cache-b",
+        "resistance-a",
+        "vaccine-b",
+        "island-b",
+        "replication-a"
+      ],
+      "roberta": [
+        "cache-a",
+        "vaccine-a",
+        "replication-a",
+        "glacier-a",
+        "cache-b",
+        "resistance-a",
+        "vaccine-b",
+        "island-b"
+      ],
+      "scores": [
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.36459200832915417,
+          "roberta_margin": -6.012094020843506
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.17801632656672284,
+          "roberta_margin": -6.222019672393799
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.17450416842833566,
+          "roberta_margin": -5.882043838500977
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.126282336859249,
+          "roberta_margin": -6.324733734130859
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.12160495997426828,
+          "roberta_margin": -6.375547409057617
+        },
+        {
+          "source_id": "vaccine-b",
+          "minilm": 0.11221892330363675,
+          "roberta_margin": -6.38449764251709
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.0945953772853288,
+          "roberta_margin": -6.55424165725708
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.0926549455505224,
+          "roberta_margin": -6.213890075683594
+        }
+      ]
+    },
+    {
+      "query_id": "island-paraphrase",
+      "category": "paraphrase",
+      "relevant": [
+        "island-a"
+      ],
+      "minilm": [
+        "island-a",
+        "island-b",
+        "glacier-a",
+        "aquifer-a",
+        "aquifer-b",
+        "pollination-b",
+        "replication-b",
+        "cache-b"
+      ],
+      "roberta": [
+        "island-a",
+        "aquifer-a",
+        "pollination-b",
+        "replication-b",
+        "island-b",
+        "aquifer-b",
+        "glacier-a",
+        "cache-b"
+      ],
+      "scores": [
+        {
+          "source_id": "island-a",
+          "minilm": 0.6883120465834776,
+          "roberta_margin": -3.3241496086120605
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.25987119241537765,
+          "roberta_margin": -4.57679557800293
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.25508769874975856,
+          "roberta_margin": -4.88107967376709
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.23310953944609547,
+          "roberta_margin": -4.402376174926758
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.2007368053282142,
+          "roberta_margin": -4.618198871612549
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.1364593241727784,
+          "roberta_margin": -4.4336748123168945
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.12132991133263708,
+          "roberta_margin": -4.524430274963379
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.11346526855771759,
+          "roberta_margin": -4.915990829467773
+        }
+      ]
+    },
+    {
+      "query_id": "island-partial",
+      "category": "partial",
+      "relevant": [
+        "island-a"
+      ],
+      "minilm": [
+        "island-a",
+        "aquifer-a",
+        "glacier-a",
+        "aquifer-b",
+        "cache-a",
+        "island-b",
+        "cache-b",
+        "glacier-b"
+      ],
+      "roberta": [
+        "island-a",
+        "glacier-a",
+        "aquifer-a",
+        "cache-a",
+        "aquifer-b",
+        "island-b",
+        "cache-b",
+        "glacier-b"
+      ],
+      "scores": [
+        {
+          "source_id": "island-a",
+          "minilm": 0.5345680467332857,
+          "roberta_margin": -3.965364933013916
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.3022907713590347,
+          "roberta_margin": -4.468782424926758
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.24648570210114734,
+          "roberta_margin": -4.144902229309082
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.2338364689783102,
+          "roberta_margin": -4.999579429626465
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.16004539430617204,
+          "roberta_margin": -4.643231391906738
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.1515110914494224,
+          "roberta_margin": -5.3235979080200195
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.12315573635721067,
+          "roberta_margin": -5.399036407470703
+        },
+        {
+          "source_id": "glacier-b",
+          "minilm": 0.1143705135282742,
+          "roberta_margin": -5.749837875366211
+        }
+      ]
+    },
+    {
+      "query_id": "island-related-independent",
+      "category": "related-independent",
+      "relevant": [],
+      "minilm": [
+        "island-a",
+        "island-b",
+        "aquifer-b",
+        "pollination-b",
+        "cache-b",
+        "aquifer-a",
+        "cache-a",
+        "vaccine-a"
+      ],
+      "roberta": [
+        "island-a",
+        "cache-a",
+        "vaccine-a",
+        "island-b",
+        "cache-b",
+        "aquifer-b",
+        "aquifer-a",
+        "pollination-b"
+      ],
+      "scores": [
+        {
+          "source_id": "island-a",
+          "minilm": 0.3033929261355025,
+          "roberta_margin": -6.225799083709717
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.26050233303135706,
+          "roberta_margin": -6.564525604248047
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.1945177803830872,
+          "roberta_margin": -6.615673542022705
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.15166984326735378,
+          "roberta_margin": -6.739989280700684
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.11142163679951027,
+          "roberta_margin": -6.580929756164551
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.1071137306575044,
+          "roberta_margin": -6.62539005279541
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.03839377732863895,
+          "roberta_margin": -6.270412445068359
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.01926830526101189,
+          "roberta_margin": -6.299829483032227
+        }
+      ]
+    },
+    {
+      "query_id": "resistance-paraphrase",
+      "category": "paraphrase",
+      "relevant": [
+        "resistance-a"
+      ],
+      "minilm": [
+        "resistance-a",
+        "vaccine-b",
+        "vaccine-a",
+        "aquifer-b",
+        "replication-a",
+        "resistance-b",
+        "replication-b",
+        "pollination-a"
+      ],
+      "roberta": [
+        "resistance-b",
+        "resistance-a",
+        "vaccine-a",
+        "replication-a",
+        "pollination-a",
+        "vaccine-b",
+        "replication-b",
+        "aquifer-b"
+      ],
+      "scores": [
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.5411539800028767,
+          "roberta_margin": -3.5806961059570312
+        },
+        {
+          "source_id": "vaccine-b",
+          "minilm": 0.5312309985530517,
+          "roberta_margin": -4.248194694519043
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.3589841027830322,
+          "roberta_margin": -3.8787248134613037
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.13344001002439082,
+          "roberta_margin": -4.7297444343566895
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.0930148650812267,
+          "roberta_margin": -3.973421812057495
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.08960993962063768,
+          "roberta_margin": -3.532925605773926
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.086536415829762,
+          "roberta_margin": -4.562757968902588
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.08537471010335572,
+          "roberta_margin": -4.153221130371094
+        }
+      ]
+    },
+    {
+      "query_id": "resistance-partial",
+      "category": "partial",
+      "relevant": [
+        "resistance-a"
+      ],
+      "minilm": [
+        "resistance-a",
+        "vaccine-b",
+        "resistance-b",
+        "vaccine-a",
+        "replication-a",
+        "pollination-a",
+        "cache-b",
+        "pollination-b"
+      ],
+      "roberta": [
+        "resistance-a",
+        "vaccine-b",
+        "vaccine-a",
+        "resistance-b",
+        "pollination-a",
+        "replication-a",
+        "pollination-b",
+        "cache-b"
+      ],
+      "scores": [
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.6289345351929012,
+          "roberta_margin": -3.0611867904663086
+        },
+        {
+          "source_id": "vaccine-b",
+          "minilm": 0.36118989976644356,
+          "roberta_margin": -4.0705156326293945
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.3138070840367235,
+          "roberta_margin": -4.231404781341553
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.26156071391386326,
+          "roberta_margin": -4.153707504272461
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.20504437180359283,
+          "roberta_margin": -5.095987796783447
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.1383898940695118,
+          "roberta_margin": -4.468042373657227
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.09858822673824363,
+          "roberta_margin": -5.228054046630859
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.09325876863687774,
+          "roberta_margin": -5.201605319976807
+        }
+      ]
+    },
+    {
+      "query_id": "resistance-related-independent",
+      "category": "related-independent",
+      "relevant": [],
+      "minilm": [
+        "vaccine-b",
+        "resistance-a",
+        "aquifer-b",
+        "cache-a",
+        "resistance-b",
+        "vaccine-a",
+        "cache-b",
+        "replication-a"
+      ],
+      "roberta": [
+        "resistance-a",
+        "vaccine-b",
+        "vaccine-a",
+        "resistance-b",
+        "cache-a",
+        "cache-b",
+        "replication-a",
+        "aquifer-b"
+      ],
+      "scores": [
+        {
+          "source_id": "vaccine-b",
+          "minilm": 0.36229010184311783,
+          "roberta_margin": -5.611084938049316
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.34947191193386407,
+          "roberta_margin": -5.507598400115967
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.04075572918859945,
+          "roberta_margin": -6.352273941040039
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.039903361284941125,
+          "roberta_margin": -5.9317779541015625
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.03795708282726644,
+          "roberta_margin": -5.895910263061523
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.028963755056676144,
+          "roberta_margin": -5.859835624694824
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.0074276188833607565,
+          "roberta_margin": -6.050203323364258
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": -0.01670434386556531,
+          "roberta_margin": -6.050463676452637
+        }
+      ]
+    },
+    {
+      "query_id": "glacier-paraphrase",
+      "category": "paraphrase",
+      "relevant": [
+        "glacier-a"
+      ],
+      "minilm": [
+        "glacier-a",
+        "glacier-b",
+        "aquifer-a",
+        "island-a",
+        "vaccine-a",
+        "replication-a",
+        "cache-a",
+        "aquifer-b"
+      ],
+      "roberta": [
+        "glacier-a",
+        "glacier-b",
+        "cache-a",
+        "aquifer-b",
+        "island-a",
+        "vaccine-a",
+        "aquifer-a",
+        "replication-a"
+      ],
+      "scores": [
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.6382744064739848,
+          "roberta_margin": -4.14622163772583
+        },
+        {
+          "source_id": "glacier-b",
+          "minilm": 0.4543316960042553,
+          "roberta_margin": -4.349668502807617
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.27170866857357556,
+          "roberta_margin": -5.74202823638916
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.22266185519986934,
+          "roberta_margin": -5.578536033630371
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.10956142015365847,
+          "roberta_margin": -5.668111324310303
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.0906508759775849,
+          "roberta_margin": -5.798012733459473
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.08982082186430179,
+          "roberta_margin": -5.499540328979492
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.08898065277351616,
+          "roberta_margin": -5.52076530456543
+        }
+      ]
+    },
+    {
+      "query_id": "glacier-partial",
+      "category": "partial",
+      "relevant": [
+        "glacier-a"
+      ],
+      "minilm": [
+        "glacier-a",
+        "glacier-b",
+        "aquifer-a",
+        "replication-a",
+        "island-a",
+        "cache-a",
+        "pollination-b",
+        "replication-b"
+      ],
+      "roberta": [
+        "glacier-a",
+        "glacier-b",
+        "cache-a",
+        "replication-b",
+        "replication-a",
+        "pollination-b",
+        "aquifer-a",
+        "island-a"
+      ],
+      "scores": [
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.5526533101598308,
+          "roberta_margin": -4.963070869445801
+        },
+        {
+          "source_id": "glacier-b",
+          "minilm": 0.26665168591322125,
+          "roberta_margin": -5.40268611907959
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.2636821859645555,
+          "roberta_margin": -5.999976634979248
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.23787473615068966,
+          "roberta_margin": -5.908068656921387
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.22239739433470485,
+          "roberta_margin": -6.156731605529785
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.1796605979872448,
+          "roberta_margin": -5.512749671936035
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.1482400472567657,
+          "roberta_margin": -5.956766128540039
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.1138369601569746,
+          "roberta_margin": -5.747574806213379
+        }
+      ]
+    },
+    {
+      "query_id": "glacier-related-independent",
+      "category": "related-independent",
+      "relevant": [],
+      "minilm": [
+        "glacier-a",
+        "aquifer-b",
+        "island-a",
+        "aquifer-a",
+        "cache-a",
+        "island-b",
+        "vaccine-b",
+        "cache-b"
+      ],
+      "roberta": [
+        "glacier-a",
+        "island-b",
+        "island-a",
+        "aquifer-b",
+        "aquifer-a",
+        "cache-b",
+        "vaccine-b",
+        "cache-a"
+      ],
+      "scores": [
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.27294101212117516,
+          "roberta_margin": -2.2852284908294678
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.18282708692327032,
+          "roberta_margin": -3.7667975425720215
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.17603148581583616,
+          "roberta_margin": -3.4685373306274414
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.11882737568212003,
+          "roberta_margin": -3.7717223167419434
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.10557825152656314,
+          "roberta_margin": -3.824204444885254
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.09595518647922674,
+          "roberta_margin": -3.3051974773406982
+        },
+        {
+          "source_id": "vaccine-b",
+          "minilm": 0.08561884154264743,
+          "roberta_margin": -3.818861961364746
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.08455423743736476,
+          "roberta_margin": -3.8048102855682373
+        }
+      ]
+    },
+    {
+      "query_id": "cache-paraphrase",
+      "category": "paraphrase",
+      "relevant": [
+        "cache-a"
+      ],
+      "minilm": [
+        "cache-a",
+        "replication-a",
+        "replication-b",
+        "cache-b",
+        "resistance-a",
+        "glacier-a",
+        "aquifer-a",
+        "resistance-b"
+      ],
+      "roberta": [
+        "cache-a",
+        "replication-a",
+        "replication-b",
+        "cache-b",
+        "aquifer-a",
+        "glacier-a",
+        "resistance-a",
+        "resistance-b"
+      ],
+      "scores": [
+        {
+          "source_id": "cache-a",
+          "minilm": 0.4489524883420506,
+          "roberta_margin": -4.632573127746582
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.2714492515321667,
+          "roberta_margin": -4.677995681762695
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.26395877530826595,
+          "roberta_margin": -4.718613624572754
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.16896857215945038,
+          "roberta_margin": -5.9414873123168945
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.15360102193129677,
+          "roberta_margin": -6.804867267608643
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.14276786748888182,
+          "roberta_margin": -6.2946457862854
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.11557237838182664,
+          "roberta_margin": -5.9539384841918945
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.10137574481631507,
+          "roberta_margin": -6.898323059082031
+        }
+      ]
+    },
+    {
+      "query_id": "cache-partial",
+      "category": "partial",
+      "relevant": [
+        "cache-a"
+      ],
+      "minilm": [
+        "cache-a",
+        "cache-b",
+        "vaccine-a",
+        "replication-a",
+        "resistance-b",
+        "replication-b",
+        "vaccine-b",
+        "pollination-a"
+      ],
+      "roberta": [
+        "cache-a",
+        "replication-b",
+        "replication-a",
+        "vaccine-a",
+        "pollination-a",
+        "resistance-b",
+        "cache-b",
+        "vaccine-b"
+      ],
+      "scores": [
+        {
+          "source_id": "cache-a",
+          "minilm": 0.3796245147762495,
+          "roberta_margin": 0.872909426689148
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.17564599389557348,
+          "roberta_margin": -6.469907760620117
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.06674430437927292,
+          "roberta_margin": -5.872845649719238
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.06254010540902066,
+          "roberta_margin": -5.70988655090332
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.04315854506902089,
+          "roberta_margin": -6.177538871765137
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.03605810742457751,
+          "roberta_margin": -5.313934326171875
+        },
+        {
+          "source_id": "vaccine-b",
+          "minilm": 0.0281938422427845,
+          "roberta_margin": -6.51418924331665
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.025338246437850345,
+          "roberta_margin": -6.075121879577637
+        }
+      ]
+    },
+    {
+      "query_id": "cache-related-independent",
+      "category": "related-independent",
+      "relevant": [],
+      "minilm": [
+        "cache-a",
+        "cache-b",
+        "aquifer-b",
+        "replication-a",
+        "replication-b",
+        "island-a",
+        "glacier-a",
+        "aquifer-a"
+      ],
+      "roberta": [
+        "cache-a",
+        "cache-b",
+        "replication-a",
+        "replication-b",
+        "island-a",
+        "aquifer-a",
+        "glacier-a",
+        "aquifer-b"
+      ],
+      "scores": [
+        {
+          "source_id": "cache-a",
+          "minilm": 0.38831955811028607,
+          "roberta_margin": -3.705918073654175
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.28530477463424264,
+          "roberta_margin": -5.869355201721191
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.10586035055837263,
+          "roberta_margin": -6.793389320373535
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.08790759556778552,
+          "roberta_margin": -5.935041427612305
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.07012645385011251,
+          "roberta_margin": -5.972018241882324
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.05121832889439488,
+          "roberta_margin": -6.011626720428467
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.05084734442670866,
+          "roberta_margin": -6.201350212097168
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.020240696180105003,
+          "roberta_margin": -6.187005043029785
+        }
+      ]
+    },
+    {
+      "query_id": "pollination-paraphrase",
+      "category": "paraphrase",
+      "relevant": [
+        "pollination-a"
+      ],
+      "minilm": [
+        "pollination-a",
+        "pollination-b",
+        "resistance-b",
+        "island-a",
+        "vaccine-a",
+        "aquifer-a",
+        "cache-b",
+        "glacier-a"
+      ],
+      "roberta": [
+        "pollination-a",
+        "pollination-b",
+        "resistance-b",
+        "cache-b",
+        "vaccine-a",
+        "aquifer-a",
+        "island-a",
+        "glacier-a"
+      ],
+      "scores": [
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.857373358112326,
+          "roberta_margin": -3.795860767364502
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.5345991684995781,
+          "roberta_margin": -4.246853828430176
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.2782567080061754,
+          "roberta_margin": -4.640870094299316
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.16767227227458992,
+          "roberta_margin": -5.178850173950195
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.13833150677848832,
+          "roberta_margin": -4.996309280395508
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.10274898497583079,
+          "roberta_margin": -5.131691932678223
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.08863131105867779,
+          "roberta_margin": -4.7301926612854
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.0462283185090188,
+          "roberta_margin": -5.304740905761719
+        }
+      ]
+    },
+    {
+      "query_id": "pollination-partial",
+      "category": "partial",
+      "relevant": [
+        "pollination-a"
+      ],
+      "minilm": [
+        "pollination-a",
+        "pollination-b",
+        "island-a",
+        "resistance-b",
+        "vaccine-a",
+        "cache-b",
+        "aquifer-a",
+        "island-b"
+      ],
+      "roberta": [
+        "island-a",
+        "pollination-a",
+        "aquifer-a",
+        "pollination-b",
+        "resistance-b",
+        "island-b",
+        "vaccine-a",
+        "cache-b"
+      ],
+      "scores": [
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.7501861399521739,
+          "roberta_margin": 0.04244476556777954
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.5812579275132165,
+          "roberta_margin": -2.5992441177368164
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.31186089071274337,
+          "roberta_margin": 0.7140187621116638
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.16735513069079436,
+          "roberta_margin": -2.6729042530059814
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.16117554173818424,
+          "roberta_margin": -3.660706043243408
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.14141960955336072,
+          "roberta_margin": -3.965816020965576
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.12531525707220295,
+          "roberta_margin": -2.058103561401367
+        },
+        {
+          "source_id": "island-b",
+          "minilm": 0.100468027493489,
+          "roberta_margin": -2.7946343421936035
+        }
+      ]
+    },
+    {
+      "query_id": "pollination-related-independent",
+      "category": "related-independent",
+      "relevant": [],
+      "minilm": [
+        "pollination-a",
+        "pollination-b",
+        "island-a",
+        "resistance-b",
+        "aquifer-a",
+        "cache-b",
+        "aquifer-b",
+        "replication-a"
+      ],
+      "roberta": [
+        "island-a",
+        "pollination-a",
+        "aquifer-a",
+        "resistance-b",
+        "replication-a",
+        "pollination-b",
+        "cache-b",
+        "aquifer-b"
+      ],
+      "scores": [
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.37824541512799814,
+          "roberta_margin": -4.415539741516113
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.18117154630506668,
+          "roberta_margin": -4.828453063964844
+        },
+        {
+          "source_id": "island-a",
+          "minilm": 0.11595263374426983,
+          "roberta_margin": -4.290337562561035
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.10218528057992188,
+          "roberta_margin": -4.727427005767822
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.09541450473307211,
+          "roberta_margin": -4.619678020477295
+        },
+        {
+          "source_id": "cache-b",
+          "minilm": 0.04423370268384566,
+          "roberta_margin": -4.850994110107422
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": 0.012283309686455447,
+          "roberta_margin": -5.15407657623291
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.010332443128669962,
+          "roberta_margin": -4.759731769561768
+        }
+      ]
+    },
+    {
+      "query_id": "unrelated-0",
+      "category": "unrelated",
+      "relevant": [],
+      "minilm": [
+        "pollination-b",
+        "resistance-b",
+        "pollination-a",
+        "cache-a",
+        "glacier-b",
+        "replication-a",
+        "replication-b",
+        "island-a"
+      ],
+      "roberta": [
+        "island-a",
+        "glacier-b",
+        "replication-b",
+        "replication-a",
+        "pollination-a",
+        "cache-a",
+        "pollination-b",
+        "resistance-b"
+      ],
+      "scores": [
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.10223121624187047,
+          "roberta_margin": -6.310832977294922
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.06274349249047806,
+          "roberta_margin": -6.358137130737305
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.04293843154458846,
+          "roberta_margin": -6.222543716430664
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.03153240979525678,
+          "roberta_margin": -6.261362075805664
+        },
+        {
+          "source_id": "glacier-b",
+          "minilm": 0.019919840021380836,
+          "roberta_margin": -6.14708948135376
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.011430037494821785,
+          "roberta_margin": -6.217995643615723
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": -0.00456967511015894,
+          "roberta_margin": -6.171584129333496
+        },
+        {
+          "source_id": "island-a",
+          "minilm": -0.005305503158923933,
+          "roberta_margin": -6.122496604919434
+        }
+      ]
+    },
+    {
+      "query_id": "unrelated-1",
+      "category": "unrelated",
+      "relevant": [],
+      "minilm": [
+        "cache-b",
+        "replication-a",
+        "vaccine-a",
+        "resistance-a",
+        "pollination-b",
+        "cache-a",
+        "replication-b",
+        "vaccine-b"
+      ],
+      "roberta": [
+        "vaccine-a",
+        "cache-a",
+        "replication-b",
+        "replication-a",
+        "cache-b",
+        "resistance-a",
+        "vaccine-b",
+        "pollination-b"
+      ],
+      "scores": [
+        {
+          "source_id": "cache-b",
+          "minilm": 0.0957555205630482,
+          "roberta_margin": -1.4529592990875244
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.07335743909438104,
+          "roberta_margin": -1.4009017944335938
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.033223159004018274,
+          "roberta_margin": -0.19532510638237
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": 0.03151177868537805,
+          "roberta_margin": -1.6332941055297852
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.007773746999154417,
+          "roberta_margin": -2.158259868621826
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": -0.001418103859853451,
+          "roberta_margin": -0.5618678331375122
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": -0.008945911126132468,
+          "roberta_margin": -1.29389226436615
+        },
+        {
+          "source_id": "vaccine-b",
+          "minilm": -0.009284289878161087,
+          "roberta_margin": -1.9570565223693848
+        }
+      ]
+    },
+    {
+      "query_id": "unrelated-2",
+      "category": "unrelated",
+      "relevant": [],
+      "minilm": [
+        "pollination-a",
+        "vaccine-a",
+        "resistance-b",
+        "replication-a",
+        "replication-b",
+        "resistance-a",
+        "aquifer-b",
+        "pollination-b"
+      ],
+      "roberta": [
+        "pollination-b",
+        "vaccine-a",
+        "pollination-a",
+        "replication-a",
+        "resistance-b",
+        "aquifer-b",
+        "replication-b",
+        "resistance-a"
+      ],
+      "scores": [
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.06110518935389749,
+          "roberta_margin": -4.4818267822265625
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.041406187885090845,
+          "roberta_margin": -4.39289665222168
+        },
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.03251874486715049,
+          "roberta_margin": -4.716127395629883
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.02659641044529114,
+          "roberta_margin": -4.5789079666137695
+        },
+        {
+          "source_id": "replication-b",
+          "minilm": 0.011054593590005922,
+          "roberta_margin": -4.932591438293457
+        },
+        {
+          "source_id": "resistance-a",
+          "minilm": -0.004954610125106623,
+          "roberta_margin": -5.054893493652344
+        },
+        {
+          "source_id": "aquifer-b",
+          "minilm": -0.007002561285973118,
+          "roberta_margin": -4.717965126037598
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": -0.018028038762288433,
+          "roberta_margin": -3.961665630340576
+        }
+      ]
+    },
+    {
+      "query_id": "unrelated-3",
+      "category": "unrelated",
+      "relevant": [],
+      "minilm": [
+        "resistance-b",
+        "pollination-a",
+        "cache-a",
+        "glacier-a",
+        "vaccine-a",
+        "pollination-b",
+        "aquifer-a",
+        "replication-a"
+      ],
+      "roberta": [
+        "pollination-a",
+        "cache-a",
+        "resistance-b",
+        "vaccine-a",
+        "glacier-a",
+        "pollination-b",
+        "aquifer-a",
+        "replication-a"
+      ],
+      "scores": [
+        {
+          "source_id": "resistance-b",
+          "minilm": 0.15744632927270918,
+          "roberta_margin": -5.460918426513672
+        },
+        {
+          "source_id": "pollination-a",
+          "minilm": 0.10245551374377596,
+          "roberta_margin": -5.018926620483398
+        },
+        {
+          "source_id": "cache-a",
+          "minilm": 0.08257126277822617,
+          "roberta_margin": -5.378303050994873
+        },
+        {
+          "source_id": "glacier-a",
+          "minilm": 0.06100860950164501,
+          "roberta_margin": -5.516416072845459
+        },
+        {
+          "source_id": "vaccine-a",
+          "minilm": 0.05141066225278371,
+          "roberta_margin": -5.463406562805176
+        },
+        {
+          "source_id": "pollination-b",
+          "minilm": 0.05036288561596146,
+          "roberta_margin": -5.669957160949707
+        },
+        {
+          "source_id": "aquifer-a",
+          "minilm": 0.044988831686777184,
+          "roberta_margin": -5.792470932006836
+        },
+        {
+          "source_id": "replication-a",
+          "minilm": 0.04396422761377152,
+          "roberta_margin": -5.872163772583008
+        }
+      ]
+    }
+  ]
+}

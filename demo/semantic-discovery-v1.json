@@ -1,0 +1,323 @@
+{
+  "protocol": "discovery-transfer-v1",
+  "license": "CC0-1.0; purpose-written controlled examples",
+  "limitations": "Small synthetic diagnostic, not independent natural plagiarism accuracy. Frozen before inference; no threshold selection.",
+  "candidate_budget": 8,
+  "primary": "correct source-passage MRR and Hit@1,3,5 on 16 positive queries; MiniLM top8 vs RoBERTa rerank of same8; negatives have no valid source and must remain review-only",
+  "sources": [
+    {
+      "id": "aquifer-a",
+      "title": "aquifer a",
+      "text": "Rain falling on permeable land seeps through soil and rock to replenish an underground aquifer. Paved surfaces reduce this recharge by directing water into drains.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "7e8e6dbc390486cfd0145a0cccc06f58730e883a00bf63caf812c9695e672fb0"
+    },
+    {
+      "id": "aquifer-b",
+      "title": "aquifer b",
+      "text": "City drainage engineers enlarged storm sewers to carry runoff away from roads. Their design emphasized preventing street flooding during intense storms.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "f5e4f9fda3fe6029c07cc358cfef509e620a1a4cce01eb02f7e138a6bfee7edb"
+    },
+    {
+      "id": "replication-a",
+      "title": "replication a",
+      "text": "A replicated database keeps copies of records on several machines. If the primary server fails, a replica can take over, although recent unreplicated writes may be lost.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "dc6a7dc20561e2a5afc2145fd6f5906ec8dca8ba561de2a3985d31429957d8cc"
+    },
+    {
+      "id": "replication-b",
+      "title": "replication b",
+      "text": "A database backup is a periodic snapshot stored offline. Restoring a large snapshot can take hours and requires a tested recovery procedure.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "b25a23a24394034878951ad9909d9c0edf06a24557bc068813b6fdd1f8ebb4ad"
+    },
+    {
+      "id": "vaccine-a",
+      "title": "vaccine a",
+      "text": "Vaccination exposes the immune system to a harmless antigen. Memory cells then enable a faster response when the actual pathogen is encountered later.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "bc5299b387e76a213334295cf6db23c7a3444714068dbe450db9405ac7179d65"
+    },
+    {
+      "id": "vaccine-b",
+      "title": "vaccine b",
+      "text": "Antibiotics inhibit bacterial growth or kill bacteria. They do not directly treat viral infections, and unnecessary prescribing promotes resistance.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "818f07f98841ea08f8dc859293d189f785cacba63ae9aa558005502f2f13d6d1"
+    },
+    {
+      "id": "island-a",
+      "title": "island a",
+      "text": "Dark roofs and roads absorb solar energy and release heat after sunset. Sparse vegetation and these surfaces make densely built districts warmer than nearby rural areas.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "b21997ce2142cb7b51ce47c2628bbac351c3b3a7cbe09bb9a6598f7b8746ffd5"
+    },
+    {
+      "id": "island-b",
+      "title": "island b",
+      "text": "Urban air pollution includes particulate matter from traffic. Exposure varies with wind direction, vehicle emissions and proximity to major roads.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "1691d3b00ba95dacedbf8e941747326e892e69d16ed70febce32eef9bb194a67"
+    },
+    {
+      "id": "resistance-a",
+      "title": "resistance a",
+      "text": "Repeated exposure to an antibiotic selects bacteria carrying resistance genes. Susceptible cells die while resistant survivors reproduce and spread their traits.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "730ed4c76e9e16e1bb5838da062594d12294803d87d6c536da4c4b0907c5ab45"
+    },
+    {
+      "id": "resistance-b",
+      "title": "resistance b",
+      "text": "Bacteria can ferment sugars without oxygen. The resulting acids are useful in food production, including yogurt and some preserved vegetables.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "ed63a23902827754fee41174d2983c89c49f593273188e05fad522409d31754d"
+    },
+    {
+      "id": "glacier-a",
+      "title": "glacier a",
+      "text": "Glaciers store snowfall as compressed ice over many years. When summer melting exceeds winter accumulation, a glacier loses mass and its terminus often retreats.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "8ae031ba21e67462503469d28c82694f9615bec210fc8c7266c9a692a5580cd1"
+    },
+    {
+      "id": "glacier-b",
+      "title": "glacier b",
+      "text": "Sea ice forms when ocean water freezes. Its seasonal extent changes rapidly, and unlike land ice its melting has little direct effect on sea level.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "1375393fab825a2501e90c86e51943dea72f1514bf70c44962880150127cb313"
+    },
+    {
+      "id": "cache-a",
+      "title": "cache a",
+      "text": "A cache stores frequently requested results near the client to avoid repeating expensive work. Stale entries must be invalidated when the underlying data changes.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "e6b6a3ae9b8f2a92bdd7c2c83216cc70cca88d3a9616250995d360f9dd365b85"
+    },
+    {
+      "id": "cache-b",
+      "title": "cache b",
+      "text": "A message queue buffers work for background workers. Acknowledgments and retries help tasks survive temporary worker failures.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "b6b306e9b2ec88729522e5da98ad4e3d72783bc9f459924f02fc7972cca608b2"
+    },
+    {
+      "id": "pollination-a",
+      "title": "pollination a",
+      "text": "Bees carry pollen between flowers as they forage for nectar. This transfer enables fertilization and supports seed production in many flowering crops.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "dda8b43d0cf811fb00a1c6b610ff3d3b9a6149afa4fbc3ca8f773804ea3d97b2"
+    },
+    {
+      "id": "pollination-b",
+      "title": "pollination b",
+      "text": "Wind pollination releases large quantities of light pollen into the air. Grasses often rely on this mechanism rather than attracting animal visitors.",
+      "revision": "discovery-fixture-v1",
+      "sha256": "7b4e630ffb2176baa7a3fafbb512a6127713377ef5e205fae788670a2f7ec0ac"
+    }
+  ],
+  "queries": [
+    {
+      "id": "aquifer-paraphrase",
+      "category": "paraphrase",
+      "text": "When the ground is covered in asphalt, less precipitation can filter down to restore subterranean water reserves.",
+      "relevant": [
+        "aquifer-a"
+      ]
+    },
+    {
+      "id": "aquifer-partial",
+      "category": "partial",
+      "text": "Water penetrates porous ground and refills underground stores; our new monitoring station will also measure river pollution.",
+      "relevant": [
+        "aquifer-a"
+      ]
+    },
+    {
+      "id": "aquifer-related-independent",
+      "category": "related-independent",
+      "text": "We interviewed residents about whether the proposed aquifer monitoring fees were affordable.",
+      "relevant": []
+    },
+    {
+      "id": "replication-paraphrase",
+      "category": "paraphrase",
+      "text": "Keeping duplicate records on other computers allows service to continue after the main node breaks, but the newest unsent changes can disappear.",
+      "relevant": [
+        "replication-a"
+      ]
+    },
+    {
+      "id": "replication-partial",
+      "category": "partial",
+      "text": "A replica takes over when the main database fails, and the dashboard now uses a blue background.",
+      "relevant": [
+        "replication-a"
+      ]
+    },
+    {
+      "id": "replication-related-independent",
+      "category": "related-independent",
+      "text": "Our database team debated which company should supply the next server rack.",
+      "relevant": []
+    },
+    {
+      "id": "vaccine-paraphrase",
+      "category": "paraphrase",
+      "text": "An innocuous pathogen component trains immune memory so that a subsequent infection triggers a swifter defensive reaction.",
+      "relevant": [
+        "vaccine-a"
+      ]
+    },
+    {
+      "id": "vaccine-partial",
+      "category": "partial",
+      "text": "Memory cells respond faster after immunization; the clinic also extended its opening hours.",
+      "relevant": [
+        "vaccine-a"
+      ]
+    },
+    {
+      "id": "vaccine-related-independent",
+      "category": "related-independent",
+      "text": "The vaccine delivery contract specifies refrigerated transport and monthly inventory audits.",
+      "relevant": []
+    },
+    {
+      "id": "island-paraphrase",
+      "category": "paraphrase",
+      "text": "Built-up neighborhoods stay hotter overnight because sun-warmed pavement radiates stored energy and there are few cooling plants.",
+      "relevant": [
+        "island-a"
+      ]
+    },
+    {
+      "id": "island-partial",
+      "category": "partial",
+      "text": "Road surfaces release stored warmth at night, while the council has approved a new sports complex.",
+      "relevant": [
+        "island-a"
+      ]
+    },
+    {
+      "id": "island-related-independent",
+      "category": "related-independent",
+      "text": "Our survey asked city residents whether they preferred parks or additional parking spaces.",
+      "relevant": []
+    },
+    {
+      "id": "resistance-paraphrase",
+      "category": "paraphrase",
+      "text": "Drug treatment eliminates vulnerable microbes, allowing those with protective genetic traits to multiply and dominate the population.",
+      "relevant": [
+        "resistance-a"
+      ]
+    },
+    {
+      "id": "resistance-partial",
+      "category": "partial",
+      "text": "Resistant bacteria survive treatment and pass on their genes; our laboratory also purchased a new microscope.",
+      "relevant": [
+        "resistance-a"
+      ]
+    },
+    {
+      "id": "resistance-related-independent",
+      "category": "related-independent",
+      "text": "The hospital committee compared the price of two antibiotic suppliers before renewing a contract.",
+      "relevant": []
+    },
+    {
+      "id": "glacier-paraphrase",
+      "category": "paraphrase",
+      "text": "A mountain ice body shrinks when warm-season ablation outweighs the snow added during colder months.",
+      "relevant": [
+        "glacier-a"
+      ]
+    },
+    {
+      "id": "glacier-partial",
+      "category": "partial",
+      "text": "A glacier retreats if melt exceeds accumulated snow; the expedition also recorded local bird species.",
+      "relevant": [
+        "glacier-a"
+      ]
+    },
+    {
+      "id": "glacier-related-independent",
+      "category": "related-independent",
+      "text": "Tourists visiting the glacier requested safer walking routes and more frequent shuttle buses.",
+      "relevant": []
+    },
+    {
+      "id": "cache-paraphrase",
+      "category": "paraphrase",
+      "text": "Saving common query answers locally reduces recomputation, provided outdated copies are removed after their original information is updated.",
+      "relevant": [
+        "cache-a"
+      ]
+    },
+    {
+      "id": "cache-partial",
+      "category": "partial",
+      "text": "Cached results reduce expensive repeated computation, and the settings page now supports three languages.",
+      "relevant": [
+        "cache-a"
+      ]
+    },
+    {
+      "id": "cache-related-independent",
+      "category": "related-independent",
+      "text": "The software team voted on a name for its new cache administration interface.",
+      "relevant": []
+    },
+    {
+      "id": "pollination-paraphrase",
+      "category": "paraphrase",
+      "text": "While gathering sweet floral food, bees transport reproductive grains to other blossoms, helping many crops form seeds.",
+      "relevant": [
+        "pollination-a"
+      ]
+    },
+    {
+      "id": "pollination-partial",
+      "category": "partial",
+      "text": "Bees transfer pollen and help crops produce seeds; a nearby farmer recently installed solar panels.",
+      "relevant": [
+        "pollination-a"
+      ]
+    },
+    {
+      "id": "pollination-related-independent",
+      "category": "related-independent",
+      "text": "Our farming cooperative discussed the insurance cost of renting beehives for the orchard.",
+      "relevant": []
+    },
+    {
+      "id": "unrelated-0",
+      "category": "unrelated",
+      "text": "The violinist played a quiet melody at the evening concert.",
+      "relevant": []
+    },
+    {
+      "id": "unrelated-1",
+      "category": "unrelated",
+      "text": "A tailor repaired the torn sleeve using green thread.",
+      "relevant": []
+    },
+    {
+      "id": "unrelated-2",
+      "category": "unrelated",
+      "text": "The museum purchased a marble sculpture for its entrance hall.",
+      "relevant": []
+    },
+    {
+      "id": "unrelated-3",
+      "category": "unrelated",
+      "text": "The bakery sells sourdough loaves every Saturday morning.",
+      "relevant": []
+    }
+  ]
+}
