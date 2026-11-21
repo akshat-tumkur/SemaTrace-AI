@@ -1,0 +1,3 @@
+Instead of listing the words per document in the forward index, the inverted index data structure is developed which lists the documents per word. [1]
+
+[1] Wikipedia. Inverted index. https://en.wikipedia.org/w/index.php?oldid=1354610034

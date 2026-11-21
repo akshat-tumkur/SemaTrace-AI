@@ -1,0 +1,1 @@
+A document-to-word catalogue can be reorganized so that a word points back to the documents containing it.
