@@ -1,0 +1,131 @@
+{
+  "campaign": "arc-roberta-practical-30k-v1",
+  "seed": 20261120,
+  "official_partition": "train",
+  "frozen_split_sha256": {
+    "train": "6f2f554837e64a5dfed4952d6c4a4c77e42743d0f157a82fc8897750f92b8ec8",
+    "val": "77a1df2b17601e3c0bcc63820b97bb681769d879559d0d94029593caded213a8",
+    "final": "43bcd85df3e2032e6990e01197208bb8de79417dce722fa7eb70a1d870486cb6"
+  },
+  "sampling_configuration": {
+    "positive_low_overlap": 1500,
+    "positive_other": 1500,
+    "negative_related_high_overlap": 6000,
+    "negative_positive_section_high_overlap": 6000,
+    "negative_related_other": 9000,
+    "negative_positive_section_other": 6000,
+    "high_negative_overlap_quantile": 0.75,
+    "length_quartiles": 4,
+    "maximum_per_source_family": 60,
+    "maximum_positive_per_source_family": 6
+  },
+  "examples": 30000,
+  "positives": 3000,
+  "negatives": 27000,
+  "source_families": 4978,
+  "positive_source_families": 2334,
+  "largest_family_contribution": 17,
+  "unique_pool_examples": 1426388,
+  "duplicate_inputs_excluded": 14509,
+  "conflicting_input_keys_excluded": 69,
+  "high_negative_lexical_overlap_threshold_by_doc_label": {
+    "0": 0.07692307978868484,
+    "1": 0.0833333358168602
+  },
+  "strata": {
+    "positive_low_overlap": {
+      "available_unique_examples": 40723,
+      "selected": 1500,
+      "input_word_length_quartiles": [
+        105.0,
+        133.0,
+        166.0
+      ],
+      "selected_by_length_quartile": [
+        375,
+        375,
+        375,
+        375
+      ]
+    },
+    "positive_other": {
+      "available_unique_examples": 16709,
+      "selected": 1500,
+      "input_word_length_quartiles": [
+        104.0,
+        128.0,
+        156.0
+      ],
+      "selected_by_length_quartile": [
+        375,
+        375,
+        375,
+        375
+      ]
+    },
+    "negative_related_high_overlap": {
+      "available_unique_examples": 123619,
+      "selected": 6000,
+      "input_word_length_quartiles": [
+        100.0,
+        122.0,
+        151.0
+      ],
+      "selected_by_length_quartile": [
+        1500,
+        1500,
+        1500,
+        1500
+      ]
+    },
+    "negative_positive_section_high_overlap": {
+      "available_unique_examples": 222900,
+      "selected": 6000,
+      "input_word_length_quartiles": [
+        100.0,
+        123.0,
+        151.0
+      ],
+      "selected_by_length_quartile": [
+        1500,
+        1500,
+        1500,
+        1500
+      ]
+    },
+    "negative_related_other": {
+      "available_unique_examples": 358315,
+      "selected": 9000,
+      "input_word_length_quartiles": [
+        100.0,
+        128.0,
+        163.0
+      ],
+      "selected_by_length_quartile": [
+        2250,
+        2250,
+        2250,
+        2250
+      ]
+    },
+    "negative_positive_section_other": {
+      "available_unique_examples": 664122,
+      "selected": 6000,
+      "input_word_length_quartiles": [
+        101.0,
+        129.0,
+        162.0
+      ],
+      "selected_by_length_quartile": [
+        1500,
+        1500,
+        1500,
+        1500
+      ]
+    }
+  },
+  "positive_weight": 1.8923681041932578,
+  "weight_derivation": "5 * (58151 / (1440966 - 58151)) * (selected_negative / selected_positive); preserves aggregate weighted class odds, not unbiased within-class sampling.",
+  "selection_policy": "Actual training labels only. Low overlap Jaccard<=.10 is the preexisting evaluation definition. Hard negatives use upper training-only lexical-overlap quartile separately in reuse-positive and reuse-negative sections; no model/cosine predictions.",
+  "private_selection_sha256": "bb912bc3304fa6f497a8a4fb33c2ced196f9b188ac70ed3716d8ff5cf2054640"
+}
