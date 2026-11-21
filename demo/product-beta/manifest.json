@@ -1,0 +1,43 @@
+{
+  "scope": "Product walkthrough only; constructed submissions, not independent accuracy labels",
+  "corpus_version": "corpus-v1-e03121e6e9daef850da94b100621218e0b08f5018a8e30766b65cf8f6901e130",
+  "source_passage_id": "0f0aeccce9fd172e0c3e125c6d265ec9e2ba00da49d219da523ee2390ba4a0db",
+  "source_url": "https://en.wikipedia.org/w/index.php?oldid=1354610034",
+  "source_text": "Instead of listing the words per document in the forward index, the inverted index data structure is developed which lists the documents per word.",
+  "source_occurrences": [
+    {
+      "occurrence_id": "c5fad6cc43918143ee6f1435657254b4ade654aaac8682cf9830f673b3628b92",
+      "source_id": "wikipedia_en-f4cb024e725b367b4e66e49f04e2e890d3822ecac36878cae2d884693eef4caf-14",
+      "source_document_id": "v1-44a431926f0c19ca548a240d2e6c568cfb7a568b7efe759f92cbd914eb6bd389",
+      "source_document_sha256": "f8c560930c320e60d23d9fd8e749b366281d3c43ff812a8cff6e8ae9c2172a20",
+      "source_start_char": 1897,
+      "source_end_char": 2043,
+      "title": "Inverted index",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1354610034",
+      "collection": "wikipedia_en",
+      "revision": "1354610034",
+      "authors": [
+        "Wikipedia contributors"
+      ],
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+      "license_name": "Creative Commons Attribution-Share Alike 4.0",
+      "rights_status": "WIKIMEDIA_DEFAULT_LICENSE",
+      "attribution_url": "https://en.wikipedia.org/wiki/Inverted_index",
+      "attribution_text": "Wikipedia contributors; extracted prose adapted by whitespace normalization and omission of non-prose blocks. See article history and original notices."
+    }
+  ],
+  "cases": [
+    "01-exact.txt",
+    "02-minor-edit.txt",
+    "03-paraphrase.txt",
+    "04-unrelated.txt",
+    "05-reversed-relationship.txt",
+    "06-partial-support.txt",
+    "07-citation.txt"
+  ],
+  "additional_formats": [
+    "01-exact.pdf",
+    "01-exact.docx"
+  ],
+  "semantic_expected_outcomes": "Not asserted. API key/verification disabled in this offline demo; paraphrase, partial and reversed meaning remain unverified."
+}

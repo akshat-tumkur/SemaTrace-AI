@@ -1,0 +1,7 @@
+Thermal storage experiment
+
+A laboratory team placed a ten-litre water tank inside a sealed test chamber. The researchers heated the water to sixty degrees Celsius and then allowed it to cool for ninety minutes without applying further heat. They recorded the temperature every five minutes to measure how quickly the tank released its stored energy.
+
+The trial was designed to compare insulation materials under the same conditions. Each material covered an identical tank, and every run began at the same water temperature. Keeping these factors constant helped the team attribute differences in cooling rates to the insulation rather than to changes in the starting conditions.
+
+Purpose-written SemaTrace demonstration reference, released under CC0-1.0. These described trial details form a controlled software demonstration rather than a claim about a published experiment.

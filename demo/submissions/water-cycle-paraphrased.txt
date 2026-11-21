@@ -1,0 +1,20 @@
+How Water Travels Through Earth's Natural Systems
+
+Water is continually redistributed among the atmosphere, the ground, rivers, oceans, and frozen stores. Although the planet's overall water supply changes relatively little, the amount held in each location varies with environmental conditions. This circulation involves both movement between places and transitions among ice, liquid water, and vapor.
+
+Energy from sunlight helps lift water into the air. As exposed water warms, some of it becomes vapor and enters the atmosphere. Vegetation provides another route: plants take up moisture through their roots and later release it from their leaves. Frozen material can also pass directly into a gaseous state without first becoming liquid.
+
+Air currents transport this moisture over considerable distances. When atmospheric vapor condenses into droplets or ice particles, clouds develop. Their contents can eventually reach the surface as rain or frozen precipitation. Water landing on colder regions may remain locked in glaciers or ice sheets rather than immediately continuing its journey.
+
+Rain that reaches land follows several possible paths. Some travels across the surface and collects in streams, lakes, and rivers. Another portion penetrates the soil and may descend far enough to refill underground water-bearing formations. Stored groundwater can later emerge through springs or discharge into nearby waterways. Plants may absorb some of this moisture, returning it to the air and connecting underground storage with atmospheric circulation.
+
+The duration of storage differs greatly between locations. Moisture in the atmosphere usually moves through the system much faster than water held deep underground or within large ice bodies. Consequently, the cycle should not be understood as a single journey completed at the same speed by every water molecule.
+
+Human changes to the landscape can redirect these pathways. Covering permeable ground with buildings and paving limits the amount that can soak downward and can increase surface flow. Removing forests also changes how moisture is retained and returned to the atmosphere. Heavy extraction from aquifers can reduce underground reserves when replacement does not keep pace with withdrawals.
+
+A warming climate further changes the distribution and movement of water. Higher atmospheric temperatures allow more moisture to be held in the air, affecting evaporation and precipitation patterns. Changes in rainfall timing and intensity can therefore influence ecosystems, farming, and the reliability of freshwater supplies.
+
+Source attribution: Paraphrased and reorganized from Wikipedia contributors, "Water cycle," indexed revision 1368240581.
+Source: https://en.wikipedia.org/w/index.php?oldid=1368240581
+License: Creative Commons Attribution-ShareAlike 4.0, https://creativecommons.org/licenses/by-sa/4.0/
+This adaptation is provided under the same license. It is a demonstration input, not an independently validated detection benchmark.

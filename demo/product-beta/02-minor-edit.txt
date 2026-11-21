@@ -1,0 +1,1 @@
+Instead of listing the terms per document in the forward index, the inverted index data structure is developed which lists the documents per word.
