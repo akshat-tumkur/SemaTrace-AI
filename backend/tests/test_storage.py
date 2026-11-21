@@ -15,9 +15,19 @@ def test_analysis_store_round_trips_workflow_result(tmp_path) -> None:
         "possible_paraphrases": 2,
         "false_positives": 1,
         "candidate_count": 1,
-        "units": [{"id": "u1", "text": "A claim.", "start_char": 0, "end_char": 8, "unit_type": "sentence"}],
+        "units": [
+            {
+                "id": "u1",
+                "text": "A claim.",
+                "start_char": 0,
+                "end_char": 8,
+                "unit_type": "sentence",
+            }
+        ],
         "matches": [{"unit_id": "u1", "source_url": "local://source"}],
-        "audit_log": [{"agent": "Judge", "event": "issued_verdict", "details": "Risk HIGH"}],
+        "audit_log": [
+            {"agent": "Judge", "event": "issued_verdict", "details": "Risk HIGH"}
+        ],
     }
 
     store.save("a_test", result)
