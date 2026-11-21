@@ -1,0 +1,21 @@
+campaign: arc-roberta-sequence-pair-v1
+model: FacebookAI/roberta-base
+revision: e2da8e2f811d1448a5b465c236feacd80ffbac7b
+seed: 20261120
+max_length: 512
+epochs: 3
+learning_rate: 0.00002
+positive_weight: 5.0
+effective_batch_size: 32
+micro_batch_size: 2
+evaluation_batch_size: 16
+gradient_checkpointing: true
+checkpoint_seconds: 600
+session_seconds: 10800
+published_threshold: 0.39
+acceptance:
+  sentence_f1_gain_over_tfidf: 0.05
+  automatic_precision: 0.80
+  automatic_recall: 0.20
+  negative_document_fpr: 0.10
+  minimum_predicted_positive_sentences: 30

@@ -1,0 +1,110 @@
+{
+  "artifacts": [
+    {
+      "path": "arc-sim/train.jsonl.zip",
+      "url": "https://raw.githubusercontent.com/maclaughlin/ARC-Sim/main/train.jsonl.zip",
+      "size": 89748865,
+      "check_kind": "git_blob_sha1",
+      "check_value": "c4330d5ec0de93ef3cec96dc8ea2466f2433b8f4",
+      "split": "train",
+      "terms": "CC BY-NC-SA 3.0; noncommercial research only; preserve official splits",
+      "checked_utc": "2026-11-20T09:21:13.430134+00:00",
+      "status": "verified",
+      "bytes": 89748865,
+      "md5": "c36239c253431b0e3fb3b412d2986847",
+      "sha256": "d28dd12029786c7ad4f7756367945fe00aec5cbcb59feb3fabb7d6739da5c7a9",
+      "git_blob_sha1": "c4330d5ec0de93ef3cec96dc8ea2466f2433b8f4",
+      "seconds": 14.534210700076073
+    },
+    {
+      "path": "arc-sim/val.jsonl.zip",
+      "url": "https://raw.githubusercontent.com/maclaughlin/ARC-Sim/main/val.jsonl.zip",
+      "size": 9427031,
+      "check_kind": "git_blob_sha1",
+      "check_value": "2857f56a25ff202e212cd9de226f0365ee9c8a2b",
+      "split": "val",
+      "terms": "CC BY-NC-SA 3.0; noncommercial research only; preserve official splits",
+      "checked_utc": "2026-11-20T09:21:13.431130+00:00",
+      "status": "verified",
+      "bytes": 9427031,
+      "md5": "fe04d9b1c2ff72d5e12ac82b554fbb2f",
+      "sha256": "7dfc0cbc52fb0ad45aa01e51332464fec6035ebda341bdec24123e8299603816",
+      "git_blob_sha1": "2857f56a25ff202e212cd9de226f0365ee9c8a2b",
+      "seconds": 0.1641177999554202
+    },
+    {
+      "path": "arc-sim/test.jsonl.zip",
+      "url": "https://raw.githubusercontent.com/maclaughlin/ARC-Sim/main/test.jsonl.zip",
+      "size": 10444483,
+      "check_kind": "git_blob_sha1",
+      "check_value": "ca0d8fc020bb2a6b49859ecc2b805f09fc85114c",
+      "split": "test",
+      "terms": "CC BY-NC-SA 3.0; noncommercial research only; preserve official splits",
+      "checked_utc": "2026-11-20T09:21:13.595673+00:00",
+      "status": "verified",
+      "bytes": 10444483,
+      "md5": "c801c1d317b5198322c226070171cc60",
+      "sha256": "420c2ab053e59d683ae87297361f6fd91cfd21a816ec9f5fa865c1d0a0bf4cca",
+      "git_blob_sha1": "ca0d8fc020bb2a6b49859ecc2b805f09fc85114c",
+      "seconds": 2.00684720010031
+    },
+    {
+      "path": "pan11/pan-plagiarism-corpus-2011.part2.rar",
+      "url": "https://zenodo.org/api/records/3250095/files/pan-plagiarism-corpus-2011.part2.rar/content",
+      "size": 703852907,
+      "check_kind": "md5",
+      "check_value": "b23d86c17a47d2bfbdc4c314ea5810df",
+      "record": "3250095",
+      "terms": {
+        "id": "cc-by-4.0"
+      },
+      "rights_note": "Local research evaluation; record-level metadata does not clear underlying document rights for production.",
+      "checked_utc": "2026-11-20T09:21:15.616328+00:00",
+      "status": "verified",
+      "bytes": 703852907,
+      "md5": "b23d86c17a47d2bfbdc4c314ea5810df",
+      "sha256": "e65ed4be86da9c74ad17920a24502688f709cc2db02e26bfe38dfe542a45696a",
+      "git_blob_sha1": "ebd4ab0a176c4c8d689377b29719f6978799efc1",
+      "seconds": 409.90597919991706
+    },
+    {
+      "path": "pan11/pan-plagiarism-corpus-2011.part1.rar",
+      "url": "https://zenodo.org/api/records/3250095/files/pan-plagiarism-corpus-2011.part1.rar/content",
+      "size": 1024000000,
+      "check_kind": "md5",
+      "check_value": "b2930f859497dd48ba5bb606d3f4a4f3",
+      "record": "3250095",
+      "terms": {
+        "id": "cc-by-4.0"
+      },
+      "rights_note": "Local research evaluation; record-level metadata does not clear underlying document rights for production.",
+      "checked_utc": "2026-11-20T09:21:27.965686+00:00",
+      "status": "verified",
+      "bytes": 1024000000,
+      "md5": "b2930f859497dd48ba5bb606d3f4a4f3",
+      "sha256": "ec92d20d29afa7503e3521249ea11421fc6a8ecfc871e0c79764646092ab9c35",
+      "git_blob_sha1": "872d64671c96c2855189c11193708e0540a3f468",
+      "seconds": 503.5247073000064
+    },
+    {
+      "path": "cpc11/Webis-CPC-11.zip",
+      "url": "https://zenodo.org/api/records/3251771/files/Webis-CPC-11.zip/content",
+      "size": 19515225,
+      "check_kind": "md5",
+      "check_value": "c772ea22769389d78aebe525b85c2359",
+      "record": "3251771",
+      "terms": {
+        "id": "cc-by-4.0"
+      },
+      "rights_note": "Local research evaluation; record-level metadata does not clear underlying document rights for production.",
+      "checked_utc": "2026-11-20T09:28:05.528001+00:00",
+      "status": "verified",
+      "bytes": 19515225,
+      "md5": "c772ea22769389d78aebe525b85c2359",
+      "sha256": "38e2aa8a99fb88f3e198e5ffdc7dc5086f4ad8476b4167ba5a15826bb872f261",
+      "git_blob_sha1": "ee294568de978c3816982d835f811b3e26875884",
+      "seconds": 39.70582390006166
+    }
+  ],
+  "storage": ".local/research; ignored, private research only"
+}
