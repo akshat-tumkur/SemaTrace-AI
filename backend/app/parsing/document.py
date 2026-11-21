@@ -8,7 +8,7 @@ import re
 
 from docx import Document
 from fastapi import HTTPException
-from fitz import open as open_pdf
+from pymupdf import open as open_pdf
 from app.limits import MAX_TEXT_CHARS
 
 

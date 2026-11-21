@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import re
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import lru_cache
 from types import MappingProxyType
@@ -41,25 +42,51 @@ class LexicalMatch:
 
 
 class LocalCorpus:
-    def __init__(self, documents: list[CorpusDocument], source_documents: Mapping[str, str] | None = None, *, reuse_statistics: bool = False) -> None:
+    def __init__(
+        self,
+        documents: list[CorpusDocument],
+        source_documents: Mapping[str, str] | None = None,
+        *,
+        reuse_statistics: bool = False,
+    ) -> None:
         self.documents = documents
         self.source_documents = MappingProxyType(dict(source_documents or {}))
         if reuse_statistics:
-            self._tokens, self._average_length, self._document_frequency = _cached_statistics(tuple(d.text for d in documents))
+            self._tokens, self._average_length, self._document_frequency = (
+                _cached_statistics(tuple(d.text for d in documents))
+            )
             return
         self._tokens = [_tokenize(document.text) for document in documents]
         self._average_length = sum(map(len, self._tokens)) / max(len(self._tokens), 1)
         self._document_frequency: dict[str, int] = {}
         for tokens in self._tokens:
             for token in set(tokens):
-                self._document_frequency[token] = self._document_frequency.get(token, 0) + 1
+                self._document_frequency[token] = (
+                    self._document_frequency.get(token, 0) + 1
+                )
 
     def search(self, query: str, limit: int = 3) -> list[LexicalMatch]:
         query_tokens = _tokenize(query)
         if not query_tokens:
             return []
-        scored = [(self._score(query_tokens, tokens), index) for index, tokens in enumerate(self._tokens)]
-        scored.sort(reverse=True)
+        # Identical BM25 formula/tie order, using postings rather than scanning
+        # every document's token list for every query term.
+        postings = _postings(tuple(d.text for d in self.documents))
+        scores = defaultdict(float)
+        count = len(self.documents)
+        for token in query_tokens:
+            entries = postings.get(token, ())
+            if not entries:
+                continue
+            idf = math.log(1 + (count - len(entries) + 0.5) / (len(entries) + 0.5))
+            for index, frequency in entries:
+                ratio = len(self._tokens[index]) / max(self._average_length, 1)
+                scores[index] += idf * (
+                    (frequency * 2.0) / (frequency + 1.5 * (0.25 + 0.75 * ratio))
+                )
+        scored = sorted(
+            ((score, index) for index, score in scores.items()), reverse=True
+        )
         return [
             LexicalMatch(
                 source_id=self.documents[index].source_id,
@@ -89,13 +116,28 @@ class LocalCorpus:
             if not frequency:
                 continue
             document_frequency = self._document_frequency.get(token, 0)
-            idf = math.log(1 + (document_count - document_frequency + 0.5) / (document_frequency + 0.5))
-            score += idf * ((frequency * 2.0) / (frequency + 1.5 * (0.25 + 0.75 * length_ratio)))
+            idf = math.log(
+                1
+                + (document_count - document_frequency + 0.5)
+                / (document_frequency + 0.5)
+            )
+            score += idf * (
+                (frequency * 2.0) / (frequency + 1.5 * (0.25 + 0.75 * length_ratio))
+            )
         return score
 
 
 def _tokenize(text: str) -> list[str]:
     return _TOKEN_PATTERN.findall(text.lower())
+
+
+@lru_cache(maxsize=2)
+def _postings(texts):
+    result = defaultdict(list)
+    for i, text in enumerate(texts):
+        for token, frequency in Counter(_tokenize(text)).items():
+            result[token].append((i, frequency))
+    return dict(result)
 
 
 @lru_cache(maxsize=4)
@@ -106,4 +148,8 @@ def _cached_statistics(texts: tuple[str, ...]):
     for passage in tokens:
         for token in set(passage):
             frequency[token] = frequency.get(token, 0) + 1
-    return tokens, sum(map(len, tokens)) / max(len(tokens), 1), MappingProxyType(frequency)
+    return (
+        tokens,
+        sum(map(len, tokens)) / max(len(tokens), 1),
+        MappingProxyType(frequency),
+    )
