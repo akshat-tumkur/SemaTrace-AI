@@ -4,9 +4,9 @@ This directory records a completed, computationally constrained adaptation of [R
 
 ## Model and task
 
-A full RoBERTa-base encoder, approximately124 million parameters, receives a cited abstract paired with one target sentence. Source sentences are separated by the added `[SSS]` token. The first-token representation passes through dropout0.1 and a two-logit linear head. The encoder and head are both fine-tuned using weighted classification loss; maximum input length is512 tokens with native pair truncation.
+A full RoBERTa-base encoder, approximately 124 million parameters, receives a cited abstract paired with one target sentence. Source sentences are separated by the added `[SSS]` token. The first-token representation passes through dropout 0.1 and a two-logit linear head. The encoder and head are both fine-tuned using weighted classification loss; maximum input length is512 tokens with native pair truncation.
 
-The annotations come from the [official ARC-Sim partitions](https://github.com/maclaughlin/ARC-Sim). They operationalize citation-linked sentence reuse and are not universal labels for every kind of plagiarism. ARC-Sim's CC BY-NC-SA3.0 terms apply; raw text, private heads and trained weights are not redistributed here.
+The annotations come from the [official ARC-Sim partitions](https://github.com/maclaughlin/ARC-Sim). They operationalize citation-linked sentence reuse and are not universal labels for every kind of plagiarism. ARC-Sim's CC BY-NC-SA 3.0 terms apply; raw text, private heads and trained weights are not redistributed here.
 
 ## Fixed practical subset
 
@@ -24,7 +24,7 @@ The original full-data GPU pilot worked but projected 147.68 hours. A separate t
 
 Duplicate input pairs and conflicting-label keys were excluded. Deterministic source-family round robin and four length quartiles within each stratum represented 4,978 training source families. The source/target unique-word Jaccard≤0.10 definition identifies the low-overlap slice; it is not a production cosine threshold. Related citation-linked sections are a proxy for topical negatives, not a claim of equal manually verified difficulty.
 
-The subset contains 3,000 positives and27,000 negatives. Positive class weight changed from5 to **1.892368104**, preserving the original aggregate weighted class odds after the prevalence change:
+The subset contains 3,000 positives and 27,000 negatives. Positive class weight changed from5 to **1.892368104**, preserving the original aggregate weighted class odds after the prevalence change:
 
 ```text
 5 × (58,151 / 1,382,815) × (27,000 / 3,000)
@@ -40,11 +40,11 @@ A representative training-only throughput pilot preceded full execution. Private
 
 Actual results: **three epochs,2,814 optimizer updates,924.42 seconds of GPU update time**. Update time excludes setup, validation and checkpoint overhead. The practical pilot measured99.83 examples/second. These timings cannot isolate the contribution of each optimization or guarantee another machine's runtime.
 
-The successful cloud environment used Python3.13.16, PyTorch2.6.0+cu124, Transformers4.51.3 and tokenizers0.21.1. The research requirements record those direct versions; the CPU product has a separate, smaller environment. Original full-data configuration/notebook remain available alongside the practical adaptation.
+The successful cloud environment used Python 3.13.16, PyTorch2.6.0+cu124, Transformers4.51.3 and tokenizers0.21.1. The research requirements record those direct versions; the CPU product has a separate, smaller environment. Original full-data configuration/notebook remain available alongside the practical adaptation.
 
 ## Independent evaluation
 
-The final partition contained 8,024 sentences,299 positives and494 source/section pairs. The selected epoch and thresholds came from validation. The final results are exposed and must not guide another round presented as an untouched final evaluation.
+The final partition contained 8,024 sentences,299 positives and 494 source/section pairs. The selected epoch and thresholds came from validation. The final results are exposed and must not guide another round presented as an untouched final evaluation.
 
 | Method | Precision | Recall | F1 | Low-overlap F1 | Ranking MAP |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -53,7 +53,7 @@ The final partition contained 8,024 sentences,299 positives and494 source/sectio
 | Earlier frozen supervised MiniLM | .206452 | .214047 | .210181 | .175610 | .479713 |
 | Practical RoBERTa |**.354839** |**.478261** |**.407407** |**.353468** |**.659137** |
 
-At the validation-selected research threshold0.74, RoBERTa produced143 TP/260 FP/156 FN/7,465 TN. Its F1 gain was18.36 percentage points over MiniLM and20.13 points over TF-IDF. This is an observed result for this protocol, not application-wide accuracy or a significance claim.
+At the validation-selected research threshold 0.74, RoBERTa produced143 TP/260 FP/156 FN/7,465 TN. Its F1 gain was18.36 percentage points over MiniLM and 20.13 points over TF-IDF. This is an observed result for this protocol, not application-wide accuracy or a significance claim.
 
 Related-negative sentence FPR was49/3,122=1.57%; negative-document FPR was36/226=15.93%, counting any positive sentence in a negative pair as a document false alarm. Sentence and document statistics are different units.
 
@@ -92,7 +92,7 @@ python scripts/build_practical_roberta_notebook.py --legacy-head /private/reuse-
 
 Outputs go to ignored `.local/` directories. The builders include code/configuration/hash manifests, and only the explicitly supplied private research inputs. Never add their ZIPs or weights to Git. These inputs are deliberately not downloadable from the public repository; exact historical baseline reproduction requires access to the preserved authorized artifacts. A public clone is sufficient for the application, but is not a self-contained distribution of restricted research inputs.
 
-For reproduction, the original notebook prepares verified official archives and prior-exposure exclusions; the practical notebook takes that campaign folder plus its fixed subset manifest. Use the documented Python3.13/T4 environment, run preparation and the training-only pilot, inspect the resource gate, and continue only within the protocol. Do not rerun an already opened final or modify the frozen hashes. Existing completed campaigns must resume only with their original private bundle/configuration, not repackaged publication code with a different code identity.
+For reproduction, the original notebook prepares verified official archives and prior-exposure exclusions; the practical notebook takes that campaign folder plus its fixed subset manifest. Use the documented Python 3.13/T4 environment, run preparation and the training-only pilot, inspect the resource gate, and continue only within the protocol. Do not rerun an already opened final or modify the frozen hashes. Existing completed campaigns must resume only with their original private bundle/configuration, not repackaged publication code with a different code identity.
 
 Windows CRLF versus Linux LF is handled by a verified newline-only portability path. Original campaign files remain untouched; expected frozen CRLF copies are written to the new prepared directory without changing rows, labels or frozen hashes. The standalone patch and byte-level regression tests remain included.
 

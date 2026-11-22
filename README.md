@@ -1,223 +1,129 @@
 # SemaTrace AI
 
-**Agentic semantic plagiarism investigation with explainable evidence.**
+Document source comparison with local retrieval, word-level alignment and optional AI-assisted paraphrase review.
 
-SemaTrace AI goes beyond exact string matching. It decomposes a document into sentence-level units, searches local and web sources, combines lexical and dense retrieval, verifies meaningful overlap, filters false positives, checks citations, and produces an evidence-backed forensic report.
+SemaTrace helps a reviewer answer three questions: **Which sources should I inspect? Which words match? Do these passages express a corresponding meaning?** It keeps those answers separate and shows their source evidence. It reports textual similarities and advisory semantic correspondences rather than determining plagiarism or authorship.
 
-The system does not claim to mathematically prove plagiarism. It produces a transparent similarity assessment for human review.
+![An actual paraphrase report with paired source evidence](docs/screenshots/product-ai-report.png)
 
-For the complete project details, implementation walkthrough, and architectural decisions, read [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md).
+The screenshot uses the included CC0 thermal-storage reference and paraphrase. It demonstrates application behavior, not independently measured semantic accuracy.
 
-## What It Does
+## Features
 
-```text
-Upload document
-	|
-Parse TXT, PDF, or DOCX
-	|
-Decompose into sentence units
-	|
-BM25 + dense retrieval + optional Tavily web search
-	|
-Merge and rank source candidates
-	|
-Verify meaningful content overlap
-	|
-Filter generic language and false positives
-	|
-Check citations
-	|
-Generate deterministic metrics and optional OpenAI explanation
-	|
-Persist and display an evidence-backed report
-```
+- Upload TXT, text-based PDF or DOCX submissions and reference documents.
+- Search immutable references using BM25 and a pinned local MiniLM encoder.
+- Find exact and modified wording with seeded word-level Smith-Waterman alignment.
+- Calculate overlap-safe matching-word coverage with source/range exclusions.
+- Optionally compare passage meanings using structured OpenAI responses and literal-quote validation.
+- Optionally capture additional public-web sources through Tavily.
+- Investigate selected evidence with bounded LangGraph context, retrieval and experimental reranking tools.
+- Retain attribution, highlights, refresh-safe progress, saved reports and PDF/JSON exports.
 
 ## Architecture
 
-LangGraph coordinates the workflow:
-
 ```text
-Decomposer Agent
-	  |
-Source Investigator Agent
-   /         |          \
- BM25   Dense Retrieval  Tavily
-   \         |          /
-	 Candidate Merger
-		  |
-	Evidence Verifier
-		  |
-	False Positive Filter
-		  |
-	  Citation Checker
-		  |
-   Optional OpenAI Reasoning
-		  |
-	 Forensic Judge
-		  |
-	SQLite + React Report
+References -> immutable source versions -> passages + persistent MiniLM index
+
+Submission -> extraction + position mapping -> BM25 + MiniLM
+    -> RRF source shortlist -> lexical alignment -> unique matched-word score
+    -> passage candidates -> optional AI review -> grounded advisory findings
+    -> SQLite report -> React evidence views / PDF / JSON
+
+Selected finding -> optional LangGraph investigation -> saved tool trace
 ```
 
-Every stage appends an audit event, so the UI shows the actual investigation sequence instead of a simulated loading animation.
+Retrieval identifies candidates. The lexical scorer validates matching word runs and counts each submitted word once across overlapping references. AI review compares supplied contexts and must return literal quotations that pass identity/offset checks. Valid quotations do not independently verify its interpretation.
 
-## Technology
+React/TypeScript provide the interface; FastAPI serves it with the API; SQLite stores evidence and indexes; ONNX Runtime runs local encoders on CPU; Biopython performs alignment; ReportLab generates PDFs. [Detailed architecture](docs/architecture.md).
 
-- Python 3.11+
-- FastAPI and Pydantic
-- LangGraph orchestration
-- PyMuPDF and python-docx parsing
-- BM25 lexical retrieval
-- OpenAI `text-embedding-3-small` dense retrieval with a deterministic local fallback
-- Tavily web discovery with graceful fallback
-- Optional OpenAI structured report reasoning
-- SQLite persistence
-- React, TypeScript, Vite, and Lucide icons
+## Run locally
 
-## Run Locally
+Requirements: **Python 3.12**, **Node.js 22.12+** and npm.
 
-### Backend
-
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+```sh
+git clone https://github.com/akshat-tumkur/SemaTrace-AI.git
+cd SemaTrace-AI
+python scripts/start_sematrace.py
 ```
 
-The API runs at `http://localhost:8000` and Swagger documentation is available at `http://localhost:8000/docs`.
+Open **http://127.0.0.1:8010**. Windows users can also run `./start.ps1`.
 
-### Frontend
+The launcher prepares/checks the backend environment, builds the UI, verifies or downloads the pinned encoder, seeds an empty library with 12 licensed Wikipedia revisions, and builds a compatible index. First setup requires internet access. Later local-only comparisons reuse these files. No GPU or PyTorch installation is required for the application.
 
-In a second terminal:
+Stop with `python scripts/stop_sematrace.py` or `./stop.ps1`. Logs are under `.local/runtime/`. [Deployment and troubleshooting](docs/deployment.md) covers configuration, development mode and Docker status.
 
-```powershell
+### Optional external services
+
+Copy `.env.example` to `.env` and add only the services you want:
+
+```dotenv
+OPENAI_API_KEY=your_private_key
+OPENAI_MODEL=gpt-4o-mini
+TAVILY_API_KEY=your_private_key
+```
+
+- **AI meaning and paraphrase review** sends selected submission/source excerpts to OpenAI; initially selected when configured.
+- **Public-web discovery** sends up to two queries to Tavily and captures up to three pages; initially off.
+
+Turn both off for local-only comparison. Keys remain on the backend. Provider failures are explicit, and calls can incur charges. [Privacy and licensing](docs/privacy.md).
+
+## Try a comparison
+
+1. In **Source library**, add `demo/sources/thermal-storage-reference.txt`.
+2. Under **New analysis**, choose `demo/submissions/thermal-storage-paraphrased.txt`.
+3. Select local-only or optional AI review, then **Run analysis**.
+4. Inspect **Overview & AI review** for paired quotes/differences, **Matching words** for coverage/exclusions, **Document** for quoted highlights, and **All source candidates** for alternatives.
+5. Export PDF/JSON or reopen it from **Saved reports**.
+
+The recorded demonstration produced 5.95% matching-word coverage and four advisory AI findings. These measure different things; findings are not a semantic percentage, and outputs can vary. The CC0 fixtures describe a constructed experiment. `demo/product-beta/` provides attributed exact, modified and unrelated controls.
+
+Add your own authorized references for useful domain coverage. `python scripts/provision_product_library.py` expands the Wikipedia starter collection to 60 topics.
+
+## Selected ML research
+
+A computationally constrained adaptation fine-tuned a full RoBERTa-base encoder of approximately 124 million parameters on **30,000 official-training examples**, over **three epochs and 2,814 optimizer updates**. Source-family separation, frozen evaluation identities, adjusted class weighting, mixed precision, dynamic padding and private checkpoint resumption were explicit parts of the protocol.
+
+| Independent sentence evaluation | Precision | Recall | F1 |
+| --- | ---: | ---: | ---: |
+| TF-IDF baseline | 19.09% | 22.41% | 20.62% |
+| MiniLM research baseline | 16.29% | 35.79% | 22.38% |
+| Fine-tuned RoBERTa | 35.48% | 47.83% | **40.74%** |
+
+RoBERTa improved F1 but **failed the predetermined automatic-classification acceptance gate**. A separate controlled source-passage check demonstrated no reranking gain: MiniLM Hit@1 was 16/16 versus RoBERTa's 14/16. MiniLM remains the default retriever; the private RoBERTa is an optional experimental ranking comparison, not the application's autonomous semantic classifier.
+
+API-backed review is a distinct advisory method. Nine frozen functional controls passed an actual provider run; they do not establish population precision/recall. No independent accuracy improvement is claimed for that layer.
+
+[Research methodology, results and Colab reproducibility](research/README.md). Restricted datasets, private weights and complete experimental evidence are not distributed here.
+
+## Development and tests
+
+After setup:
+
+```sh
+backend/.venv/Scripts/python.exe -m pip install -r backend/requirements-dev.txt
+backend/.venv/Scripts/python.exe -m pytest backend/tests -q
+```
+
+On macOS/Linux, use `backend/.venv/bin/python`. For the frontend:
+
+```sh
 cd frontend
-npm install
-npm run dev
-```
-
-Open the Vite URL shown in the terminal.
-
-### Tests and build
-
-```powershell
-cd backend
-pytest -q
-
-cd ..\frontend
+npm ci
+npm test
 npm run build
+npm audit --audit-level=high
 ```
 
-## Environment
+Tests cover source/index integrity, offsets, alignment, accounting, saved reports, jobs, provider failures and grounding. Optional private-model checks skip when the artifact is absent. `scripts/browser_smoke.py` performs actual Edge journeys with public/CC0 fixtures and separately selected provider execution. [Validation details](docs/deployment.md#validation).
 
-Create a local `.env` file. Never commit it.
+## Limits
 
-```env
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4
-TAVILY_API_KEY=
-EMBEDDING_MODEL=
-RERANKER_MODEL=
-DATABASE_URL=sqlite:///./data/app.db
-TAVILY_SEARCH_ENABLED=true
-TAVILY_MAX_UNITS=3
-TAVILY_MAX_RESULTS=3
-```
+- Up to 10 MB, 50,000 normalized characters and 1,000 text units; PDF parsing also caps pages at 100.
+- Local retrieval processes every accepted unit. Full-source lexical alignment retains up to 10 sources; each AI review covers up to 48 eligible units, with remaining/skipped scope disclosed.
+- Sources must be indexed or successfully captured. There is no Turnitin private-repository access or whole-internet coverage.
+- No OCR or original-PDF page-coordinate overlays; DOCX extraction reads paragraphs rather than every Word structure.
+- AI interpretation can be wrong. Related writing can rank highly; missing matches do not establish originality.
+- Local/private single-user application with no multi-user authentication.
+- Docker configuration is included; image build/runtime was not verified because Docker was unavailable on the release machine.
 
-`gpt-4` works with the current compatibility path. `gpt-4o-mini` is a faster and cheaper development option.
-
-If OpenAI or Tavily is unavailable, analysis still completes using deterministic local components.
-
-## SQLite
-
-SQLite is embedded in Python. No database server or separate installation is required.
-
-On startup, SemaTrace automatically creates `data/app.db` and stores analysis summaries, sentence units, verified matches, audit events, summaries, and recommendations. The generated database is ignored by Git.
-
-## Adding Sources
-
-### Permanent local corpus
-
-Place UTF-8 `.txt` files in `data/corpus/`. Restart the backend and they will be split into searchable source units.
-
-### Known-source demo
-
-For reliable exact-copy detection:
-
-1. Open **Index a source before checking a copy**.
-2. Select a TXT, PDF, or DOCX source file.
-3. Enter the source title and original URL.
-4. Click **Index source**.
-5. Upload the suspected submission and run analysis.
-
-The API equivalent is:
-
-```powershell
-curl.exe -X POST http://localhost:8000/api/sources `
-  -F "file=@data\corpus\wikipedia-ai.txt" `
-  -F "title=Wikipedia - Artificial Intelligence" `
-  -F "url=https://en.wikipedia.org/wiki/Artificial_intelligence"
-```
-
-Sources added through the UI are indexed for the running backend process. To keep a source after restart, also save it under `data/corpus/`.
-
-## API
-
-| Method | Route | Purpose |
-| --- | --- | --- |
-| `GET` | `/api/health` | Reports storage, workflow, Tavily, and reasoning capabilities |
-| `POST` | `/api/sources` | Indexes a known source file with title and URL |
-| `POST` | `/api/analyze` | Analyzes an uploaded document |
-| `GET` | `/api/analysis/{id}` | Reads a persisted analysis |
-| `GET` | `/api/analysis/{id}/matches` | Reads verified matches |
-| `GET` | `/api/analysis/{id}/report` | Reads the forensic report |
-
-## Understanding the Output
-
-```text
-Candidate count = possible sources discovered
-Verified matches = candidates that passed evidence verification
-Strong matches = high meaningful-token overlap
-Possible paraphrases = meaningful overlap with changed wording
-Affected text = verified matching tokens / analyzable tokens
-Risk score = coverage and verification strength combined
-```
-
-A retrieval score is not a plagiarism probability. Only verified matches appear in **Verified evidence matches**.
-
-## Judge Demo
-
-1. Index a known Wikipedia or sample source.
-2. Upload a submission containing an exact copied passage, a paraphrase, and a common phrase.
-3. Show the Decomposer, BM25, dense retrieval, Tavily, Verifier, Filter, Citation Checker, OpenAI, and Judge events.
-4. Show candidate count versus verified match count.
-5. Open an exact match and point to the source URL.
-6. Open a paraphrase and explain that wording changed while the claim remained similar.
-7. Show that generic language was filtered.
-8. Show citation status, recommendations, and the downloadable report.
-
-### Judge explanation
-
-> We separate discovery from verification. The Investigator finds possible sources, the Verifier checks whether the source supports the suspected overlap, the filter removes generic language, the Citation Checker adds context, and the Judge aggregates the evidence. OpenAI explains retrieved evidence but does not invent sources or calculate numeric measurements.
-
-## Important Limitations
-
-- The default dense fallback is deterministic and local; production can replace it with a trained embedding provider.
-- Tavily is discovery support and may not return exact page text.
-- UI-indexed sources are process-local unless also saved under `data/corpus/`.
-- Citation detection is pattern-based.
-- Thresholds are engineering defaults, not legal or scientifically validated boundaries.
-- Final academic or legal determination requires human review.
-
-## Security
-
-- Keep API keys in `.env` or deployment secret storage.
-- Never commit `.env` or send keys to the React client.
-- Treat uploaded files and web content as untrusted data.
-- Limit file size and reject malformed/unsupported files.
-- Keep provider failures from crashing deterministic analysis.
-
-## Repository Guide
-
-- [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md): complete project details, implementation walkthrough, scoring formulas, and architectural decisions with rationale
+Source attribution and third-party notices are retained. ARC-Sim-derived weights have noncommercial obligations and are excluded. No project-wide license or commercial redistribution clearance is implied; see [privacy and licensing](docs/privacy.md).
