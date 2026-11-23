@@ -5,25 +5,30 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from uuid import uuid4
 from fastapi import Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.concurrency import run_in_threadpool
 from app.limits import MAX_FILE_SIZE, MAX_ANALYSIS_UNITS, MAX_TEXT_CHARS, analysis_slot
 from app.parsing.document import parse_document
 from app.parsing.sentences import split_into_units
-from app.product.jobs import JobStore
+from app.cloud import enabled as cloud_enabled
+from app.cloud.records import jobs_for, reserve_options, CloudJobStore
 
 
 def install_product_routes(app, get_analysis_store, source_dependency):
     tasks = set()
 
     def jobs():
-        return JobStore(get_analysis_store().database_path.with_suffix(".jobs.sqlite3"))
+        return jobs_for(get_analysis_store())
 
     previous_lifespan = app.router.lifespan_context
 
     @asynccontextmanager
     async def product_lifespan(application):
-        jobs().recover()
+        if cloud_enabled():
+            CloudJobStore.recover()
+        else:
+            jobs().recover()
         async with previous_lifespan(application):
             yield
         if tasks:
@@ -35,8 +40,18 @@ def install_product_routes(app, get_analysis_store, source_dependency):
     def product_status():
         return {
             "version": "3.1",
-            "cloud_review_available": bool(os.getenv("OPENAI_API_KEY")),
-            "web_search_available": bool(os.getenv("TAVILY_API_KEY")),
+            "cloud_review_available": bool(os.getenv("OPENAI_API_KEY"))
+            and (
+                not cloud_enabled()
+                or int(os.getenv("SEMATRACE_AI_GLOBAL_DAILY_LIMIT", "0")) > 0
+            ),
+            "web_search_available": bool(os.getenv("TAVILY_API_KEY"))
+            and (
+                not cloud_enabled()
+                or int(os.getenv("SEMATRACE_WEB_GLOBAL_DAILY_LIMIT", "0")) > 0
+            ),
+            "authentication_required": cloud_enabled(),
+            "storage_mode": "cloud" if cloud_enabled() else "local",
             "review_model": os.getenv("SEMATRACE_REVIEW_MODEL")
             or os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
             "source_uploads_enabled": os.getenv(
@@ -52,11 +67,16 @@ def install_product_routes(app, get_analysis_store, source_dependency):
                 "web_queries": 2,
                 "additional_web_sources": 3,
             },
-            "privacy": "Local analysis stays on this computer. Opt-in AI review sends selected excerpts to OpenAI; opt-in web discovery sends two representative queries to Tavily and captures public pages.",
+            "privacy": (
+                "Cloud mode stores your documents and reports privately in Supabase and vectors in Pinecone. "
+                if cloud_enabled()
+                else "Local analysis stays on this computer. "
+            )
+            + "Opt-in AI review sends selected excerpts to OpenAI; opt-in web discovery sends two representative queries to Tavily and captures public pages.",
         }
 
     def perform(job_id, filename, content, options, source_store, analysis_store):
-        records = JobStore(analysis_store.database_path.with_suffix(".jobs.sqlite3"))
+        records = jobs_for(analysis_store)
         began = time.perf_counter()
 
         def progress(stage, percent):
@@ -137,13 +157,14 @@ def install_product_routes(app, get_analysis_store, source_dependency):
             )
             progress("Saving source-linked report", 97)
             analysis_store.save(result["analysis_id"], result)
-            records.update(
-                job_id,
-                status="completed",
-                stage="Report ready",
-                progress=100,
-                analysis_id=result["analysis_id"],
-            )
+            if not getattr(analysis_store, "completes_jobs_atomically", False):
+                records.update(
+                    job_id,
+                    status="completed",
+                    stage="Report ready",
+                    progress=100,
+                    analysis_id=result["analysis_id"],
+                )
         except Exception as error:
             if isinstance(error, HTTPException):
                 message = str(error.detail)
@@ -167,6 +188,8 @@ def install_product_routes(app, get_analysis_store, source_dependency):
                 analysis_store,
             )
         finally:
+            from app.runtime_memory import release_idle_memory
+            release_idle_memory()
             analysis_slot.release()
 
     @app.post("/api/analysis-jobs", status_code=202)
@@ -188,6 +211,9 @@ def install_product_routes(app, get_analysis_store, source_dependency):
                 raise HTTPException(413, "File exceeds the10MB limit.")
             key = "job_" + uuid4().hex[:16]
             options = {"cloud_review": cloud_review, "web_search": web_search}
+            store = get_analysis_store()
+            if cloud_enabled():
+                await run_in_threadpool(reserve_options, store.owner, options)
             value = jobs().create(
                 key,
                 (file.filename or "document.txt")
@@ -195,6 +221,17 @@ def install_product_routes(app, get_analysis_store, source_dependency):
                 .rsplit("/", 1)[-1][:255],
                 options,
             )
+            if cloud_enabled():
+                try:
+                    await run_in_threadpool(jobs().persist_upload, key, content)
+                except Exception:
+                    jobs().update(
+                        key,
+                        status="failed",
+                        stage="Upload persistence failed",
+                        error="Upload could not be stored. Retry later.",
+                    )
+                    raise
             task = asyncio.create_task(
                 worker(
                     key,
@@ -202,7 +239,7 @@ def install_product_routes(app, get_analysis_store, source_dependency):
                     content,
                     options,
                     source_store,
-                    get_analysis_store(),
+                    store,
                 )
             )
             tasks.add(task)
@@ -219,6 +256,28 @@ def install_product_routes(app, get_analysis_store, source_dependency):
         if result is None:
             raise HTTPException(404, "Analysis job not found.")
         return result
+
+    @app.get("/api/analysis-jobs/{job_id}/upload")
+    def original_upload(job_id: str):
+        if not cloud_enabled():
+            raise HTTPException(
+                404, "Original upload is unavailable for this local job."
+            )
+        store = get_analysis_store()
+        saved = jobs_for(store).get(job_id)
+        if not saved or not saved.get("upload_sha256"):
+            raise HTTPException(404, "Original upload not found.")
+        from app.cloud.client import Blobs
+
+        raw = Blobs(store.owner).get(saved["upload_sha256"])
+        return Response(
+            raw,
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": 'attachment; filename="original-submission"',
+                "Cache-Control": "no-store",
+            },
+        )
 
     class ReviewOptions(BaseModel):
         model_config = ConfigDict(extra="forbid", strict=True)
@@ -246,6 +305,8 @@ def install_product_routes(app, get_analysis_store, source_dependency):
             cached = saved.get("semantic_review", {}).get("investigations", {}).get(key)
             if cached:
                 return cached
+            if cloud_enabled():
+                await run_in_threadpool(reserve_options, store.owner, None, "ai")
             from app.product.providers import OpenAIReviewer
             from app.discovery.investigation import investigate
 
@@ -287,6 +348,9 @@ def install_product_routes(app, get_analysis_store, source_dependency):
             if saved is None:
                 raise HTTPException(404, "Analysis not found.")
             from app.product.review import review_saved
+
+            if cloud_enabled():
+                await run_in_threadpool(reserve_options, store.owner, None, "ai")
 
             result = await run_in_threadpool(
                 review_saved, saved, source_store, saved.get("semantic_assessment")

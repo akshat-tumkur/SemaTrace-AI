@@ -6,9 +6,7 @@ from pathlib import Path
 from zipfile import ZipFile
 import re
 
-from docx import Document
 from fastapi import HTTPException
-from pymupdf import open as open_pdf
 from app.limits import MAX_TEXT_CHARS
 
 
@@ -68,6 +66,7 @@ def parse_document(filename: str, content: bytes) -> ParsedDocument:
 
 
 def _parse_pdf(content: bytes) -> str:
+    from pymupdf import open as open_pdf
     try:
         with open_pdf(stream=content, filetype="pdf") as document:
             if document.needs_pass:
@@ -94,6 +93,7 @@ def _parse_pdf(content: bytes) -> str:
 
 
 def _parse_docx(content: bytes) -> str:
+    from docx import Document
     try:
         with ZipFile(BytesIO(content)) as archive:
             entries = archive.infolist()

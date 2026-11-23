@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 import hashlib
 import sqlite3
 import os
@@ -26,6 +26,9 @@ from app.retrieval.generations import IndexUnavailable
 from app.limits import RequestLimits, MAX_FILE_SIZE, MAX_ANALYSIS_UNITS, analysis_slot
 from app.privacy import LocalPrivacy
 from app.parsing.sentences import split_into_units
+from app.cloud import enabled as cloud_enabled
+from app.cloud.auth import CloudAuthentication, current_owner
+from app.cloud.client import CloudUnavailable
 
 app = FastAPI(
     title="SemaTrace AI",
@@ -33,6 +36,7 @@ app = FastAPI(
     version="3.1.0",
 )
 app.add_middleware(RequestLimits)
+app.add_middleware(CloudAuthentication)
 app.add_middleware(LocalPrivacy)
 app.add_middleware(
     TrustedHostMiddleware,
@@ -57,13 +61,40 @@ app.add_middleware(
 )
 
 local_corpus = load_local_corpus()
-analysis_store = AnalysisStore()
+analysis_store = None if cloud_enabled() else AnalysisStore()
 pdf_export_slot = BoundedSemaphore(1)
+
+
+def get_analysis_store():
+    global analysis_store
+    if cloud_enabled():
+        from app.cloud.records import CloudAnalysisStore
+
+        return CloudAnalysisStore(current_owner())
+    if analysis_store is None:
+        analysis_store = AnalysisStore()
+    return analysis_store
+
+
+@app.exception_handler(CloudUnavailable)
+async def unavailable_cloud(request, error):
+    from fastapi.responses import JSONResponse
+
+    return JSONResponse(
+        {
+            "detail": "Cloud storage or retrieval is temporarily unavailable. Your saved data has not been replaced with an empty local database."
+        },
+        503,
+    )
 
 
 def get_source_store() -> SourceCorpusStore:
     """Per-request repository; reads CLI commits and supports FastAPI overrides."""
     try:
+        if cloud_enabled():
+            from app.cloud.sources import CloudSourceStore
+
+            return CloudSourceStore(current_owner())
         store = SourceCorpusStore()
         if os.getenv("SEMATRACE_IMPORT_LEGACY_CORPUS", "true").lower() == "true":
             store.import_legacy(local_corpus)
@@ -72,6 +103,26 @@ def get_source_store() -> SourceCorpusStore:
         raise HTTPException(
             503, "Source corpus is unavailable; no substitute index was used."
         ) from error
+
+
+def selected_library(store, scope):
+    if getattr(store, "cloud", False):
+        from app.cloud.sources import CloudSourceStore
+
+        return CloudSourceStore(store.owner, scope=scope, include_global=False)
+    if scope != "private":
+        raise HTTPException(409, "Local mode uses its existing single reference library.")
+    return store
+
+
+@app.get("/api/account")
+def account_permissions():
+    if not cloud_enabled():
+        return {"authentication_required": False, "is_admin": False}
+    from app.cloud.libraries import is_admin
+
+    actor = current_owner()
+    return {"authentication_required": True, "user_id": actor, "is_admin": is_admin(actor)}
 
 
 class AnalysisSummary(BaseModel):
@@ -154,7 +205,7 @@ def health() -> dict[str, str]:
     return {
         "status": "ok",
         "service": "sematrace-api",
-        "storage": "sqlite",
+        "storage": "supabase" if cloud_enabled() else "sqlite",
         "workflow": "deterministic-document-alignment-v3",
         "web_search": "disabled",
         "reasoning": "deterministic-fallback",
@@ -169,6 +220,10 @@ def health() -> dict[str, str]:
 def ready(source_store: SourceCorpusStore = Depends(get_source_store)) -> dict:
     """Read-only readiness; never builds an index or invokes a paid provider."""
     try:
+        if cloud_enabled():
+            from app.cloud.readiness import ready as cloud_ready
+
+            return cloud_ready()
         corpus = source_store.snapshot()
         if not corpus.documents:
             raise CorpusUnavailable("empty_corpus")
@@ -210,6 +265,10 @@ async def create_analysis(
     corpus_version: str | None = Form(None),
     source_store: SourceCorpusStore = Depends(get_source_store),
 ) -> AnalysisSummary:
+    if cloud_enabled():
+        from app.cloud.records import reserve_options
+
+        await run_in_threadpool(reserve_options, current_owner())
     if not analysis_slot.acquire(blocking=False):
         raise HTTPException(
             429,
@@ -278,7 +337,7 @@ async def _create_analysis(file, corpus_version, source_store):
     original_offsets(result["document"], result["related_sources"])
     result["created_at"] = datetime.now(timezone.utc).isoformat()
     try:
-        await run_in_threadpool(analysis_store.save, analysis_id, result)
+        await run_in_threadpool(get_analysis_store().save, analysis_id, result)
     except (sqlite3.Error, OSError) as error:
         raise HTTPException(
             503, "The report could not be saved; please retry later."
@@ -291,8 +350,18 @@ async def add_source(
     file: UploadFile = File(...),
     title: str = Form(..., min_length=1, max_length=1000),
     url: str = Form(..., min_length=1, max_length=2000),
+    scope: Literal["private", "global"] = Form("private"),
+    replace_source_id: str | None = Form(None, min_length=1, max_length=200),
     source_store: SourceCorpusStore = Depends(get_source_store),
 ) -> dict[str, Any]:
+    source_store = selected_library(source_store, scope)
+    if getattr(source_store, "cloud", False):
+        await run_in_threadpool(source_store.require_write)
+    if replace_source_id:
+        if not getattr(source_store, "cloud", False):
+            raise HTTPException(409, "Local references retain their existing upload workflow.")
+        if not await run_in_threadpool(source_store.has_source, replace_source_id):
+            raise HTTPException(404, "Source not found in this library.")
     if os.getenv("SEMATRACE_SOURCE_UPLOAD_ENABLED", "true").lower() != "true":
         raise HTTPException(403, "Source uploads are disabled on this instance.")
     content = await file.read(MAX_FILE_SIZE + 1)
@@ -306,12 +375,20 @@ async def add_source(
         url=url,
         revision=digest(content),
         extractor_version="document-parser-v1",
-        rights_status="PRIVATE_UPLOAD",
+        rights_status="UNVERIFIED" if scope == "global" else "PRIVATE_UPLOAD",
     )
     try:
 
         def index_source():
-            result = source_store.ingest(meta, parsed.text, content)
+            if getattr(source_store, "cloud", False):
+                from app.cloud.records import reserve_options
+
+                reserve_options(source_store.owner, operation="reference")
+            result = source_store.ingest(
+                meta, parsed.text, content, source_id=replace_source_id
+            )
+            if getattr(source_store, "cloud", False):
+                return result
             from app.retrieval.generations import GenerationStore, IndexSpec
 
             corpus = source_store.snapshot()
@@ -325,6 +402,8 @@ async def add_source(
         try:
             result = await run_in_threadpool(index_source)
         finally:
+            from app.runtime_memory import release_idle_memory
+            release_idle_memory()
             analysis_slot.release()
     except (CorpusUnavailable, sqlite3.Error) as error:
         raise HTTPException(
@@ -343,6 +422,32 @@ async def add_source(
     return {**result, "title": title, "url": url}
 
 
+@app.delete("/api/sources/{source_id}")
+async def remove_source(
+    source_id: str,
+    scope: Literal["private", "global"] = Query("private"),
+    source_store=Depends(get_source_store),
+):
+    source_store = selected_library(source_store, scope)
+    if getattr(source_store, "cloud", False):
+        await run_in_threadpool(source_store.require_write)
+    if not getattr(source_store, "cloud", False):
+        raise HTTPException(
+            409, "Library removal is currently available for cloud-owned sources."
+        )
+    if os.getenv("SEMATRACE_SOURCE_UPLOAD_ENABLED", "true").lower() != "true":
+        raise HTTPException(403, "Source-library changes are disabled.")
+    if not analysis_slot.acquire(blocking=False):
+        raise HTTPException(429, "Analysis or indexing is running.")
+    try:
+        result = await run_in_threadpool(source_store.delete, source_id)
+        if result is None:
+            raise HTTPException(404, "Source not found.")
+        return result
+    finally:
+        analysis_slot.release()
+
+
 @app.get("/api/corpus")
 def get_corpus(
     source_store: SourceCorpusStore = Depends(get_source_store),
@@ -358,9 +463,10 @@ def list_sources(
     offset: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     collection: str | None = None,
+    scope: Literal["private", "global"] = Query("private"),
     source_store: SourceCorpusStore = Depends(get_source_store),
 ) -> list[dict]:
-    return source_store.list_sources(offset, limit, collection)
+    return selected_library(source_store, scope).list_sources(offset, limit, collection)
 
 
 @app.get("/api/corpus/snapshots/{version_id}")
@@ -402,24 +508,26 @@ def get_ingestion_run(
 def list_analyses(
     offset: int = Query(0, ge=0, le=100000), limit: int = Query(20, ge=1, le=100)
 ) -> list[dict]:
-    return analysis_store.list_reports(offset, limit)
+    return get_analysis_store().list_reports(offset, limit)
 
 
 @app.delete("/api/analysis/{analysis_id}")
 def delete_analysis(analysis_id: str):
-    if not analysis_store.delete(analysis_id):
+    store = get_analysis_store()
+    if not store.delete(analysis_id):
         raise HTTPException(404, "Analysis not found.")
     from app.product.jobs import JobStore
 
-    job_path = analysis_store.database_path.with_suffix(".jobs.sqlite3")
-    if job_path.exists():
-        JobStore(job_path).forget_analysis(analysis_id)
+    if hasattr(store, "database_path"):
+        job_path = store.database_path.with_suffix(".jobs.sqlite3")
+        if job_path.exists():
+            JobStore(job_path).forget_analysis(analysis_id)
     return {"deleted": analysis_id}
 
 
 @app.get("/api/analysis/{analysis_id}")
 def get_analysis(analysis_id: str) -> dict[str, Any]:
-    result = analysis_store.get(analysis_id)
+    result = get_analysis_store().get(analysis_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Analysis not found.")
     return {key: value for key, value in result.items() if key != "alignment_sources"}
@@ -427,7 +535,7 @@ def get_analysis(analysis_id: str) -> dict[str, Any]:
 
 @app.get("/api/analysis/{analysis_id}/matches")
 def get_matches(analysis_id: str) -> list[dict[str, Any]]:
-    result = analysis_store.get(analysis_id)
+    result = get_analysis_store().get(analysis_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Analysis not found.")
     return result["matches"]
@@ -439,7 +547,7 @@ async def recalculate_similarity(
 ) -> dict[str, Any]:
     """Recalculate from saved evidence only: no retrieval or model calls."""
     try:
-        result = await run_in_threadpool(analysis_store.get, analysis_id)
+        result = await run_in_threadpool(get_analysis_store().get, analysis_id)
         if result is None:
             raise HTTPException(404, "Analysis not found.")
         document = result.get("document")
@@ -475,7 +583,7 @@ async def recalculate_similarity(
                 options.model_dump(),
             )
         if not await run_in_threadpool(
-            analysis_store.update_similarity_report, analysis_id, report
+            get_analysis_store().update_similarity_report, analysis_id, report
         ):
             raise HTTPException(404, "Analysis not found.")
         return report
@@ -491,7 +599,7 @@ async def recalculate_similarity(
 
 @app.get("/api/analysis/{analysis_id}/report")
 def get_report(analysis_id: str) -> dict[str, Any]:
-    result = analysis_store.get(analysis_id)
+    result = get_analysis_store().get(analysis_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Analysis not found.")
     return {
@@ -540,7 +648,7 @@ def get_report(analysis_id: str) -> dict[str, Any]:
 async def download_pdf(analysis_id: str):
     """Render persisted values and exclusions; never rerun detection to export."""
     try:
-        result = await run_in_threadpool(analysis_store.get, analysis_id)
+        result = await run_in_threadpool(get_analysis_store().get, analysis_id)
     except (sqlite3.Error, OSError) as error:
         raise HTTPException(503, "Saved report storage is unavailable.") from error
     if result is None:
@@ -611,7 +719,7 @@ async def semantic_action(analysis_id, request, source_store, kind):
             429, "An analysis or semantic review is running; retry when it finishes."
         )
     try:
-        saved = await run_in_threadpool(analysis_store.get, analysis_id)
+        saved = await run_in_threadpool(get_analysis_store().get, analysis_id)
         if saved is None:
             raise HTTPException(404, "Analysis not found.")
         if saved.get("report_version") != "3.0":
@@ -651,7 +759,7 @@ async def semantic_action(analysis_id, request, source_store, kind):
                 ) from error
         value["created_at"] = datetime.now(timezone.utc).isoformat()
         if not await run_in_threadpool(
-            analysis_store.save_semantic_review, analysis_id, kind, key, value
+            get_analysis_store().save_semantic_review, analysis_id, kind, key, value
         ):
             raise HTTPException(404, "Analysis was deleted during review.")
         return value
@@ -686,4 +794,4 @@ async def investigate_semantic(
 
 from app.product.routes import install_product_routes
 
-install_product_routes(app, lambda: analysis_store, get_source_store)
+install_product_routes(app, get_analysis_store, get_source_store)

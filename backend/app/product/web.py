@@ -238,11 +238,14 @@ def discover(text, store, progress=None):
     if result["sources"]:
         if progress:
             progress("Indexing captured public sources", 34)
-        corpus = store.snapshot()
-        generation, _ = GenerationStore(corpus.retrieval_index_path).build(
-            corpus, IndexSpec.local(), api_key="", batch_size=32
-        )
-        result["generation_id"] = generation.id
+        if getattr(store,'cloud',False):
+            result['generation_id']='cloud-pinecone-minilm'
+        else:
+            corpus = store.snapshot()
+            generation, _ = GenerationStore(corpus.retrieval_index_path).build(
+                corpus, IndexSpec.local(), api_key="", batch_size=32
+            )
+            result["generation_id"] = generation.id
     else:
         result["status"] = "partial"
         result["warnings"].append(

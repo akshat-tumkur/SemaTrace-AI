@@ -45,7 +45,7 @@ class RequestLimits:
             )
         )
         deletion_write = scope.get("method") == "DELETE" and path.startswith(
-            "/api/analysis/"
+            ("/api/analysis/", "/api/sources/")
         )
         if (
             scope["type"] != "http"
@@ -71,7 +71,7 @@ class RequestLimits:
                 {"detail": "Upload exceeds the request limit."}, 413
             )(scope, receive, send)
         # Do not trust forwarded IP headers. A trusted proxy needs its own limit.
-        client = (scope.get("client") or ("unknown", 0))[0]
+        client = scope.get('sematrace_owner') or (scope.get("client") or ("unknown", 0))[0]
         now = time.monotonic()
         with self.lock:
             start, count = self.clients.pop(client, (now, 0))

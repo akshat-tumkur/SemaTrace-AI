@@ -14,6 +14,7 @@ import pytest
 def isolate_source_repository(monkeypatch, tmp_path):
     # API source writes must never populate the developer's persistent corpus.
     monkeypatch.setenv("SEMATRACE_CORPUS_DB_PATH", str(tmp_path / "sources.sqlite3"))
+    monkeypatch.setenv("SEMATRACE_DB_PATH", str(tmp_path / "analyses.sqlite3"))
 
 
 @pytest.fixture

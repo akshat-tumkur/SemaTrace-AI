@@ -1,0 +1,50 @@
+# Free web service only. Supply credentials in Render's encrypted environment.
+# Before deployment: migrate, grant-admin, publish/verify the global corpus, check.
+# Administrator membership is in protected PostgreSQL data, never an env/frontend role.
+services:
+  - type: web
+    name: sematrace-api
+    runtime: docker
+    plan: free
+    numInstances: 1
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/ready
+    autoDeployTrigger: "off"
+    envVars:
+      - key: SEMATRACE_STORAGE_PROVIDER
+        value: supabase
+      - key: SEMATRACE_VECTOR_PROVIDER
+        value: pinecone
+      - key: SEMATRACE_SERVE_FRONTEND
+        value: "false"
+      - key: SEMATRACE_INFERENCE_BATCH_SIZE
+        value: "8"
+      - key: SEMATRACE_WRITE_REQUESTS_PER_MINUTE
+        value: "10"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: SUPABASE_DB_URL
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_NAME
+        value: sematrace-minilm
+      - key: PINECONE_INDEX_HOST
+        sync: false
+      - key: SEMATRACE_CORS_ORIGINS
+        sync: false
+      - key: SEMATRACE_ALLOWED_HOSTS
+        sync: false
+      - key: SEMATRACE_AI_USER_DAILY_LIMIT
+        value: "0"
+      - key: SEMATRACE_AI_GLOBAL_DAILY_LIMIT
+        value: "0"
+      - key: SEMATRACE_WEB_USER_DAILY_LIMIT
+        value: "0"
+      - key: SEMATRACE_WEB_GLOBAL_DAILY_LIMIT
+        value: "0"

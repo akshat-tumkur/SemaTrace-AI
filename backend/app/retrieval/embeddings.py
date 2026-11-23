@@ -76,7 +76,7 @@ class EmbeddingIndex:
             self._use_hash_fallback(error)
 
     def search(self, query: str, limit: int = 3) -> list[DenseMatch]:
-        if not self._vectors:
+        if len(self._vectors) == 0:
             return []
         if self.provider == "deterministic-hash-fallback":
             # Fallback is sticky for this index. Recovery requires a NEW complete index.
@@ -206,7 +206,7 @@ class EmbeddingIndex:
 
     @staticmethod
     def _cosine(left: list[float], right: list[float]) -> float:
-        if not left or len(left) != len(right):
+        if len(left) == 0 or len(left) != len(right):
             raise ValueError("embedding_incompatible_dimensions")
         if any(
             not math.isfinite(value) for vector in (left, right) for value in vector

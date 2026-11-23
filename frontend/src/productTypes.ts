@@ -12,5 +12,5 @@ export type Analysis = {
   corpus?:{source_origins:number;unique_passages:number;dense_status:string};retrieval?:{retained_sources:string[];dropped_sources:string[]}
   processing?:{elapsed_seconds:number};web_discovery?:{status:string;sources:unknown[];queries:string[];warnings:string[]}
 }
-export type ProductStatus = {cloud_review_available:boolean;web_search_available:boolean;review_model:string;source_uploads_enabled:boolean;privacy:string;limits?:{ai_units_per_review:number}}
+export type ProductStatus = {cloud_review_available:boolean;web_search_available:boolean;review_model:string;source_uploads_enabled:boolean;privacy:string;authentication_required?:boolean;storage_mode?:string;limits?:{ai_units_per_review:number}}
 export type Job = {job_id:string;status:string;stage:string;progress:number;analysis_id:string|null;error:string|null;filename:string}

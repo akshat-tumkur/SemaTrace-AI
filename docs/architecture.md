@@ -7,7 +7,7 @@ SemaTrace separates source discovery, matching-word measurement and advisory mea
 | Component | Responsibility |
 | --- | --- |
 | React/TypeScript | Upload choices, progress, report views, exclusions and exports. |
-| FastAPI/Uvicorn | One local origin for the UI and API. |
+| FastAPI/Uvicorn | One local origin, or an authenticated API for a separate frontend. |
 | SourceCorpusStore | Source captures, immutable versions, metadata, occurrences and snapshots. |
 | GenerationStore | Verified embedding spaces and corpus-aligned vector generations. |
 | HybridRetriever | Batched local MiniLM/BM25 search, document aggregation and RRF. |
@@ -15,6 +15,7 @@ SemaTrace separates source discovery, matching-word measurement and advisory mea
 | Product review | Bounded OpenAI comparisons and literal quotation validation. |
 | Investigation graph | Conditional context, alternatives or experimental reranking. |
 | AnalysisStore/JobStore | Reports, saved edits, progress and restart recovery. |
+| Cloud adapters | Supabase Auth/PostgreSQL/private Storage and Pinecone vector retrieval, shared global references plus isolated private account data. |
 | ReportLab | PDF generation from saved evidence. |
 
 ## Reference preparation
@@ -28,13 +29,15 @@ Pinned MiniLM produces 384-dimensional, mean-pooled, normalized vectors locally.
 1. `POST /api/analysis-jobs` checks size/the shared heavy-work slot and returns HTTP202 with a durable job ID. The browser polls while a worker thread performs blocking processing.
 2. Extraction retains original Unicode and normalized position maps. Segmentation handles URLs, abbreviations and some citation markers. Bounds fail explicitly instead of silently dropping the ending.
 3. Optional Tavily discovery makes up to 2 queries, examines at most 6 URLs and captures at most 3 sources, with at most 3 provider-extraction fallbacks. Direct/provider captures have separate provenance and are indexed before the analysis snapshot.
-4. Every accepted unit receives BM25/local MiniLM retrieval. Query similarities stream in batches of 32; the neural representation has a256-token per-unit limit.
+4. Every accepted unit receives BM25/local MiniLM retrieval. Local query similarities stream in batches of 32; ONNX inference splits those into smaller batches of 8 by default. The neural representation has a256-token per-unit limit. Cloud mode computes BM25 in PostgreSQL and retrieves a bounded Pinecone passage pool, retaining the same local encoder and RRF formula.
 5. Maximum query/passage scores aggregate to source documents. RRF adds `1/(60+rank)` contributions; up to 10 full versions enter lexical alignment. Retained/dropped IDs persist.
 6. Independently, up to 8 semantic passage-occurrence candidates per unit retain literal text, provenance, positions and ranking signals. No cosine threshold declares reuse.
 7. Lexical alignment measures wording; optional AI review compares selected meanings. Their results remain separate.
 8. The saved report is written before the job becomes complete. The browser changes its job URL to the saved analysis URL.
 
 Browser refresh reconnects to the existing job. A process restart cannot resume its in-memory upload/thread: unfinished jobs become interrupted failures. Completed reports persist.
+
+Cloud mode stores original uploads privately before acknowledging the job. Report insertion and job completion commit in the same PostgreSQL transaction. Interrupted cloud uploads remain downloadable by their owner for resubmission; work is not silently replayed against paid providers.
 
 ## Wording and coverage
 
@@ -68,6 +71,10 @@ Explanations undergo separate quote/identity checks and remain unverified interp
 ## Persistence and presentation
 
 The default report database is `backend/data/beta-demo/analyses.sqlite3`; its historical directory name preserves existing reports. A sibling jobs database stores progress. Source metadata/blobs and retrieval SQLite live under `backend/data/source-corpus/`. Models live under `backend/data/models/`; ignored `.local/` holds runtime state and optional private artifacts.
+
+With `SEMATRACE_STORAGE_PROVIDER=supabase`, factories instead return owner-scoped cloud stores. Supabase verifies bearer sessions; PostgreSQL retains passages, term frequencies, immutable source identities, snapshots, jobs, reports, exclusions and daily budgets. Content-addressed raw/extracted files live in private Storage. A single global library (UUID ending `0001`, not an Auth user) stores shared references; private library UUIDs belong to their users. Pinecone stores 384-dimensional cosine vectors in `global-v1` and isolated `user-UUID` namespaces. Analysis freezes the eligible union, deduplicates canonical versions, computes BM25 statistics over eligible distinct passages, merges comparable namespace cosine results before limits, then applies RRF once. Global writes require membership in protected `st_admins`, checked by the backend on each request; user-editable metadata confers no role. Global source changes do not depend on the uploading administrator remaining an active account. Frozen source-version filters, publication visibility checks and grounded passage lookups prevent stale/unpublished vectors from being treated as report evidence. Removal deactivates sources first and retains a vector-cleanup outbox for provider failures. BM25 term data stays in PostgreSQL; source-text caches and remote query results are bounded. BM25 corpus statistics materialize once per query and the term lookup has a covering index. Provider upserts hold at most 64 vectors while encoder microbatches remain eight. The report-size guard counts JSON incrementally before storage, retaining the same 24 MiB bound without allocating full duplicate payloads.
+
+Cloud mode has no ephemeral SQLite fallback. The Render container contains only code, fonts and the pinned public encoder; replacing it does not own the lifetime of persistent cloud records. One instance/worker is required for the in-process heavy-work semaphore. Authenticated cloud report/export reads share that semaphore to bound transient memory. PostgreSQL daily budgets survive replacement; short per-user request-rate windows are process-local. [Setup and free-tier limitations](deployment.md#free-cloud-hosting).
 
 Reports retain their original source/index scope, matching runs, candidates, original maps and explicit edits. Internal full alignment-source snapshots support recalculation but are omitted from public API payloads. Export reads saved values without rescoring. Deletion removes report children/job pointers while references and existing exports/backups remain separate.
 

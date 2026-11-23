@@ -190,7 +190,9 @@ def investigate(saved, candidate_id, store, advisor=None):
             snapshot = store.snapshot(version_id=saved["corpus"]["version"])
             try:
                 generation_id = saved.get("retrieval", {}).get("generation_id")
-                if generation_id:
+                if hasattr(snapshot,'create_retriever'):
+                    retriever=snapshot.create_retriever()
+                elif generation_id:
                     generation = GenerationStore(snapshot.retrieval_index_path).load(
                         generation_id, snapshot, expected_spec=IndexSpec.local()
                     )

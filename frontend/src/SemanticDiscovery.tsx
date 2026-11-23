@@ -1,3 +1,4 @@
+import { apiFetch } from './network'
 import { useEffect, useState } from 'react'
 import { safeExternalUrl } from './evidence'
 import { readJsonResponse } from './api'
@@ -24,11 +25,11 @@ export default function SemanticDiscovery({ id, rows, review, onSaved }: {id: st
   const group = rows.filter(r => r.submission_start === start)
   const ranking = review.rankings?.[String(start)]
   const overview = summarizeDiscovery(rows)
-  useEffect(() => {fetch(API+'/api/semantic/capabilities').then(readJsonResponse).then(setCaps).catch(() => {})}, [])
+  useEffect(() => {apiFetch(API+'/api/semantic/capabilities').then(readJsonResponse).then(setCaps).catch(() => {})}, [])
   async function act(kind: 'rerank' | 'investigate', candidate: string) {
     setBusy(kind); setError('')
     try {
-      const response = await fetch(`${API}/api/analysis/${id}/semantic/${kind}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({candidate_id:candidate}), signal: AbortSignal.timeout(kind === 'investigate' ? 300_000 : 90_000)})
+      const response = await apiFetch(`${API}/api/analysis/${id}/semantic/${kind}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({candidate_id:candidate}), signal: AbortSignal.timeout(kind === 'investigate' ? 300_000 : 90_000)})
       await readJsonResponse(response)
       await onSaved()
     } catch(e) {setError(e instanceof Error ? e.message : 'Semantic review unavailable')}

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, replace
-from functools import lru_cache
 import hashlib
 from http.client import HTTPException
 import json
@@ -19,6 +18,8 @@ from pathlib import Path
 import sqlite3
 import time
 from typing import Callable, Literal
+
+import numpy as np
 from urllib.error import HTTPError, URLError
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -122,9 +123,8 @@ def validate_vectors(vectors, count, dimensions):
             raise IndexUnavailable("invalid_vector_coordinate")
 
 
-@lru_cache(maxsize=8192)
 def _decoded_vector(payload, dimensions):
-    """Immutable, shape-checked coordinates; callers still verify stored hashes."""
+    """Decode one verified row; never retain JSON payloads and boxed floats globally."""
     vector = json.loads(payload)
     validate_vectors([vector], 1, dimensions)
     return tuple(vector)
@@ -154,7 +154,7 @@ def corpus_identity(corpus):
 class Generation:
     id: str
     manifest: dict
-    vectors: tuple[tuple[float, ...], ...]
+    vectors: np.ndarray
     documents: tuple
 
 
@@ -209,6 +209,10 @@ class GenerationStore:
         row = c.execute(
             "SELECT * FROM vectors WHERE space=? AND passage_id=?", (space, passage)
         ).fetchone()
+        return self._checked_vector(row, expected, dimensions)
+
+    @staticmethod
+    def _checked_vector(row, expected=None, dimensions=None):
         if row is None:
             if expected is not None:
                 raise IndexUnavailable("generation_vector_missing")
@@ -253,13 +257,31 @@ class GenerationStore:
                     raise IndexUnavailable("generation_space_mismatch")
                 if m["space"] != self.key(spec):
                     raise IndexUnavailable("generation_space_identity_mismatch")
-                vectors = [
-                    self._vector(c, m["space"], p, h, spec.dimensions)
-                    for p, h in zip(ids, m["vector_hashes"])
-                ]
-                return Generation(
-                    generation_id, m, tuple(vectors), tuple(corpus.documents)
-                )
+                # Float64 preserves every persisted coordinate exactly. Streaming
+                # avoids a corpus-sized Python-float graph and decoded-JSON cache.
+                vectors = np.empty((len(ids), spec.dimensions), dtype=np.float64)
+                positions = {p: i for i, p in enumerate(ids)}
+                # One SELECT per row repeatedly crosses the Windows/WSL file
+                # boundary for SQLite locking/metadata. Bounded IN queries keep
+                # row streaming and all integrity checks without that N+1 cost.
+                for start in range(0, len(ids), 512):
+                    batch = ids[start : start + 512]
+                    rows = c.execute(
+                        "SELECT passage_id,vector_hash,payload FROM vectors WHERE space=? AND passage_id IN ("
+                        + ",".join("?" for _ in batch) + ")",
+                        (m["space"], *batch),
+                    )
+                    found = 0
+                    for row in rows:
+                        i = positions[row["passage_id"]]
+                        vectors[i] = self._checked_vector(
+                            row, m["vector_hashes"][i], spec.dimensions
+                        )
+                        found += 1
+                    if found != len(batch):
+                        raise IndexUnavailable("generation_vector_missing")
+                vectors.flags.writeable = False
+                return Generation(generation_id, m, vectors, tuple(corpus.documents))
         except (ValueError, KeyError, TypeError) as e:
             raise IndexUnavailable("invalid_generation_serialization") from e
 
@@ -350,15 +372,22 @@ class GenerationStore:
                 if self.compatible(prior, spec):
                     actual = prior
                     break
-        vectors = [None] * len(ids)
+        vectors = (
+            np.empty((len(ids), actual.dimensions), dtype=np.float64)
+            if actual.dimensions is not None else None
+        )
+        present=bytearray(len(ids))
         if actual.dimensions is not None:
             with self.connect() as c:
                 for i, passage in enumerate(ids):
-                    vectors[i] = self._vector(
+                    vector = self._vector(
                         c, self.key(actual), passage, dimensions=actual.dimensions
                     )
-        reused = sum(v is not None for v in vectors)
-        missing = [i for i, v in enumerate(vectors) if v is None]
+                    if vector is not None:
+                        vectors[i]=vector
+                        present[i]=1
+        reused = sum(present)
+        missing = [i for i, exists in enumerate(present) if not exists]
         client = EmbeddingIndex.__new__(EmbeddingIndex)
         client.api_key, client.model, client.dimensions = (
             api_key,
@@ -405,6 +434,8 @@ class GenerationStore:
                 dimensions = actual.dimensions or (len(batch[0]) if batch else 0)
                 validate_vectors(batch, len(indexes), dimensions)
                 actual = actual.model_copy(update={"dimensions": dimensions})
+                if vectors is None:
+                    vectors=np.empty((len(ids),dimensions),dtype=np.float64)
                 for i, vector in zip(indexes, batch):
                     vectors[i] = vector
             except (
@@ -429,8 +460,10 @@ class GenerationStore:
                 ) from e
         if actual.dimensions is None:
             raise IndexUnavailable("cannot_infer_empty_index_dimensions")
-        validate_vectors(vectors, len(ids), actual.dimensions)
-        payloads = [canonical(v) for v in vectors]
+        if vectors is None:
+            vectors=np.empty((0,actual.dimensions),dtype=np.float64)
+        if vectors.shape!=(len(ids),actual.dimensions) or not np.isfinite(vectors).all():
+            raise IndexUnavailable('invalid_generation_matrix')
         space = self.key(actual)
         manifest = dict(
             schema_version=SCHEMA_VERSION,
@@ -439,14 +472,15 @@ class GenerationStore:
             source_fingerprint=fingerprint,
             spec=actual.model_dump(),
             space=space,
-            vector_hashes=[sha(p) for p in payloads],
+            vector_hashes=[sha(canonical(v.tolist())) for v in vectors],
         )
         raw = canonical(manifest)
         generation_id = "retrieval-v1-" + sha(raw)
         # No persisted source content, submitted text, provider response bodies or keys.
         with self.connect() as c:
             c.execute("BEGIN IMMEDIATE")
-            for passage, payload in zip(ids, payloads):
+            for passage, vector in zip(ids, vectors):
+                payload=canonical(vector.tolist())
                 existing = self._vector(c, space, passage, dimensions=actual.dimensions)
                 if existing is not None and canonical(existing) != payload:
                     raise IndexUnavailable("concurrent_vector_conflict")
@@ -463,6 +497,11 @@ class GenerationStore:
                     "INSERT OR REPLACE INTO active_generations VALUES(?,?,?,NULL)",
                     (version, self.key(spec), generation_id),
                 )
+        # The published loader owns its matrix. Release the builder's before
+        # loading, so ingestion never retains two corpus-wide representations.
+        if ids:
+            del vector
+        del vectors
         g = self.load(generation_id, corpus, expected_spec=spec)
         metrics = dict(
             new_vectors=len(missing),
@@ -562,7 +601,7 @@ class PersistentEmbeddingIndex(EmbeddingIndex):
             raise ValueError("query_handle_expects_one_passage")
         query = texts[0]
         if query in self._corpus_vectors:
-            return [self._corpus_vectors[query]]
+            return [self._corpus_vectors[query].tolist()]
         if query in self._query_cache:
             return [self._query_cache[query]]
         if self.provider == "local-onnx":

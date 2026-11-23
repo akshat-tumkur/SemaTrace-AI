@@ -1,21 +1,39 @@
+x-local-image: &local-image
+  image: sematrace-ai:local
+  build: .
 services:
+  corpus-init:
+    <<: *local-image
+    init: true
+    user: "0:0"
+    entrypoint: ["python", "-m", "app.storage.docker_seed"]
+    restart: "no"
+    healthcheck:
+      disable: true
+    volumes:
+      - ./backend/data/source-corpus:/seed:ro
+      - sematrace-corpus:/destination
   sematrace:
-    build: .
+    <<: *local-image
+    init: true
+    depends_on:
+      corpus-init:
+        condition: service_completed_successfully
     ports:
       - "127.0.0.1:8010:8000"
     env_file:
       - .env
     environment:
       SEMATRACE_DB_PATH: /app/backend/data/reports/analyses.sqlite3
-      SEMATRACE_CORPUS_DB_PATH: /app/backend/data/source-corpus/corpus.sqlite3
+      SEMATRACE_CORPUS_DB_PATH: /app/backend/data/source-corpus/data/corpus.sqlite3
       SEMATRACE_IMPORT_LEGACY_CORPUS: "false"
       SEMATRACE_SOURCE_UPLOAD_ENABLED: "true"
       SEMATRACE_CORS_ORIGINS: http://localhost:8010,http://127.0.0.1:8010
       SEMATRACE_ALLOWED_HOSTS: localhost,127.0.0.1,[::1],sematrace
       SEMATRACE_INVESTIGATION_ENABLED: "false"
     volumes:
-      - ./backend/data/source-corpus:/app/backend/data/source-corpus
-      - ./backend/data/models:/app/backend/data/models:ro
+      - sematrace-corpus:/app/backend/data/source-corpus
       - sematrace-reports:/app/backend/data/reports
 volumes:
+  sematrace-corpus:
   sematrace-reports:

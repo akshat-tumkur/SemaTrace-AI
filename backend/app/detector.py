@@ -20,7 +20,9 @@ def run_detection(filename, file_type, text, corpus, *, retriever=None, units=No
     started = time.perf_counter()
     units = units if units is not None else split_into_units(text)
     submission_sha = hashlib.sha256(text.encode()).hexdigest()
-    retriever = retriever or HybridRetriever(corpus)
+    retriever = retriever or (
+        corpus.create_retriever() if hasattr(corpus, "create_retriever") else HybridRetriever(corpus)
+    )
     ranking = retriever.rank(units)
     selected = ranking["documents"][:MAX_SOURCE_DOCUMENTS]
     sources = {}
@@ -195,7 +197,8 @@ def run_detection(filename, file_type, text, corpus, *, retriever=None, units=No
             "note": "Extracted-text offsets; not PDF page coordinates.",
         },
         "corpus": dict(
-            corpus.corpus_info, dense_status="LOCAL_LEARNED_PERSISTENT_GENERATION"
+            corpus.corpus_info, dense_status=corpus.corpus_info.get("dense_status")
+            if hasattr(corpus, "create_retriever") else "LOCAL_LEARNED_PERSISTENT_GENERATION"
         ),
         "summary": f"{len(findings)} lexical passage correspondences. Related sources are discovery results, not validated semantic reuse.",
         "recommendations": [

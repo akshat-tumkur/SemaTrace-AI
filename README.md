@@ -18,6 +18,7 @@ The screenshot uses the included CC0 thermal-storage reference and paraphrase. I
 - Optionally capture additional public-web sources through Tavily.
 - Investigate selected evidence with bounded LangGraph context, retrieval and experimental reranking tools.
 - Retain attribution, highlights, refresh-safe progress, saved reports and PDF/JSON exports.
+- Choose private local storage or authenticated cloud storage with Supabase and Pinecone.
 
 ## Architecture
 
@@ -27,14 +28,14 @@ References -> immutable source versions -> passages + persistent MiniLM index
 Submission -> extraction + position mapping -> BM25 + MiniLM
     -> RRF source shortlist -> lexical alignment -> unique matched-word score
     -> passage candidates -> optional AI review -> grounded advisory findings
-    -> SQLite report -> React evidence views / PDF / JSON
+    -> SQLite or owned Supabase report -> React evidence views / PDF / JSON
 
 Selected finding -> optional LangGraph investigation -> saved tool trace
 ```
 
 Retrieval identifies candidates. The lexical scorer validates matching word runs and counts each submitted word once across overlapping references. AI review compares supplied contexts and must return literal quotations that pass identity/offset checks. Valid quotations do not independently verify its interpretation.
 
-React/TypeScript provide the interface; FastAPI serves it with the API; SQLite stores evidence and indexes; ONNX Runtime runs local encoders on CPU; Biopython performs alignment; ReportLab generates PDFs. [Detailed architecture](docs/architecture.md).
+React/TypeScript provide the interface; FastAPI serves the API; SQLite stores local evidence and indexes; ONNX Runtime runs local encoders on CPU; Biopython performs alignment; ReportLab generates PDFs. Optional cloud mode uses Supabase Auth/PostgreSQL/private Storage and Pinecone vectors, with a separately hosted Vercel frontend. [Detailed architecture](docs/architecture.md).
 
 ## Run locally
 
@@ -123,7 +124,7 @@ Tests cover source/index integrity, offsets, alignment, accounting, saved report
 - Sources must be indexed or successfully captured. There is no Turnitin private-repository access or whole-internet coverage.
 - No OCR or original-PDF page-coordinate overlays; DOCX extraction reads paragraphs rather than every Word structure.
 - AI interpretation can be wrong. Related writing can rank highly; missing matches do not establish originality.
-- Local/private single-user application with no multi-user authentication.
-- Docker configuration is included; image build/runtime was not verified because Docker was unavailable on the release machine.
+- Local SQLite mode is private and has no authentication. Public cloud mode requires Supabase sign-in, a shared administrator-managed corpus and isolated private references/reports.
+- Docker builds and local runtime checks are verified. Live Render/Vercel validation still requires deploying the services; free hosting has sleep and quota limits. [Cloud setup](docs/deployment.md#free-cloud-hosting).
 
 Source attribution and third-party notices are retained. ARC-Sim-derived weights have noncommercial obligations and are excluded. No project-wide license or commercial redistribution clearance is implied; see [privacy and licensing](docs/privacy.md).

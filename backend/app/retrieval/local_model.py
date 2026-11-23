@@ -45,11 +45,26 @@ def verify_artifact(raw, entry):
         raise LocalModelUnavailable("local_model_hash_mismatch")
 
 
+def verify_file(path, entry):
+    """Verify identical pinned bytes without allocating a second 90 MB model."""
+    if path.stat().st_size != entry["size"]:
+        raise LocalModelUnavailable("local_model_size_mismatch")
+    checksum = hashlib.sha256() if "lfs" in entry else hashlib.sha1()
+    if "lfs" not in entry:
+        checksum.update(b"blob " + str(entry["size"]).encode() + b"\0")
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            checksum.update(chunk)
+    expected = entry["lfs"]["sha256"] if "lfs" in entry else entry["blobId"]
+    if checksum.hexdigest() != expected:
+        raise LocalModelUnavailable("local_model_hash_mismatch")
+
+
 def verify_directory(directory):
     lock = model_lock()
     try:
         for entry in lock["files"]:
-            verify_artifact((directory / entry["rfilename"]).read_bytes(), entry)
+            verify_file(directory / entry["rfilename"], entry)
         config = json.loads((directory / "config.json").read_text())
         pooling = json.loads((directory / "1_Pooling/config.json").read_text())
         sentence = json.loads((directory / "sentence_bert_config.json").read_text())
@@ -96,7 +111,18 @@ class MiniLMEncoder:
 
     def encode(self, texts):
         try:
-            return self._encode(texts)
+            if len(texts) > 64:
+                raise LocalModelUnavailable("local_batch_or_passage_limit")
+            # Bound attention activations even when indexing requests a larger
+            # logical batch. Model, tokenization and pooling are unchanged.
+            batch = int(os.getenv("SEMATRACE_INFERENCE_BATCH_SIZE", "8"))
+            if not 1 <= batch <= 32:
+                raise LocalModelUnavailable("invalid_inference_batch_size")
+            return [
+                vector
+                for start in range(0, len(texts), batch)
+                for vector in self._encode(texts[start : start + batch])
+            ]
         except LocalModelUnavailable:
             raise
         except Exception as e:

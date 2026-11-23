@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import re
+import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import lru_cache
@@ -128,10 +129,10 @@ class LocalCorpus:
 
 
 def _tokenize(text: str) -> list[str]:
-    return _TOKEN_PATTERN.findall(text.lower())
+    return [sys.intern(t) for t in _TOKEN_PATTERN.findall(text.lower())]
 
 
-@lru_cache(maxsize=2)
+@lru_cache(maxsize=1)
 def _postings(texts):
     result = defaultdict(list)
     for i, text in enumerate(texts):
@@ -140,7 +141,7 @@ def _postings(texts):
     return dict(result)
 
 
-@lru_cache(maxsize=4)
+@lru_cache(maxsize=1)
 def _cached_statistics(texts: tuple[str, ...]):
     """Reuse only immutable lexical statistics, never unchecked source snapshots."""
     tokens = tuple(tuple(_tokenize(text)) for text in texts)

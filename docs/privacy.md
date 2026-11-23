@@ -2,7 +2,7 @@
 
 ## Data handling
 
-Extraction, BM25/MiniLM retrieval, lexical alignment, word accounting, optional private ONNX reranking and saved-report export run locally. The native server binds loopback by default. Source captures, reports, model files and runtime logs are excluded from Git.
+In local mode, extraction, BM25/MiniLM retrieval, lexical alignment, word accounting, optional private ONNX reranking and saved-report export run locally. The native server binds loopback by default. Source captures, reports, model files and runtime logs are excluded from Git.
 
 If AI review is enabled, selected submission/source excerpts are sent to OpenAI. Cloud LangGraph investigation also sends selected evidence for its decisions/explanation. The adapter requests `store:false`; this is not a blanket guarantee about every provider/account retention policy. Review the terms and controls applicable to the account used.
 
@@ -12,7 +12,11 @@ Keys remain in backend configuration and are never returned to the frontend. Quo
 
 Source uploads remain references until separately managed; deleting an analysis removes its live report/evidence and completed-job pointers. Existing exports, private backups and the reference corpus have separate lifetimes. Submitted original extracted text is retained for evidence mapping; original PDF layout reconstruction is not provided.
 
-This is a single-user local application without multi-user authentication. Host/origin checks, body/rate limits, parser guards, one-heavy-task concurrency and checked public-address fetches are safeguards, not approval for internet exposure.
+Local SQLite mode is a single-user application without authentication and must remain private. Optional cloud mode requires Supabase sign-in: submissions, report/job records, exclusions and private references are scoped to that account. The global reference corpus is deliberately shared with all authenticated users and can be changed only by administrators. Uploading a global reference makes its original file, extracted text and metadata available to those users. Raw submissions and reference files are retained in private Supabase Storage; extracted passages/metadata/reports are stored in PostgreSQL; MiniLM vectors and provenance identifiers are sent to Pinecone in one global namespace and separate private account namespaces. Reference text is not included in vector metadata. Hosting these services sends data outside the laptop even when OpenAI and Tavily are disabled.
+
+Cloud credentials stay server-side; only Supabase's public publishable key and a user's session belong in the frontend. PostgreSQL row policies and private Storage policies provide additional owner isolation. Public signup should be disabled for the operator-provisioned portfolio demo. Host/origin checks, bounded requests, persistent daily operation budgets and single-heavy-task concurrency are additional safeguards. Cloud AI/web calls default off and still require explicit excerpt/query opt-in. Free providers can pause or exhaust quotas; see [deployment](deployment.md#free-cloud-hosting).
+
+Removing a cloud source deactivates it for new searches and schedules remote vector cleanup; immutable historical source versions and saved-report evidence remain. Deleting a cloud report removes its live report/job pointers, while content-addressed uploaded blobs may remain until the operator manages account/storage retention. Account deletion, exports, provider retention and private backups have separate lifetimes; do not treat a UI removal as a guarantee of erasure everywhere.
 
 ## Evidence interpretation
 
