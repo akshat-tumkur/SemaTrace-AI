@@ -146,7 +146,7 @@ Keep `.env.cloud` private; it is ignored by Git and Docker. Do not replace the e
 1. Create a Free project in your own Supabase account and retain its database password privately.
 2. In the project's connection dialog, copy the **Transaction pooler** PostgreSQL URI (port 6543). This supports IPv4 on Free. Put it in `SUPABASE_DB_URL`; URL-encode special characters in the password. The client requires SSL and disables prepared statements. Do not paste the URI into chat.
 3. Copy the project URL into `SUPABASE_URL`, the **publishable** key into `SUPABASE_PUBLISHABLE_KEY`, and the **secret** key into `SUPABASE_SECRET_KEY`. The backend also accepts older `SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY` installations, but new projects should use the modern keys. Secret/database keys stay server-side. [Supabase key types](https://supabase.com/docs/guides/getting-started/api-keys), [connection options](https://supabase.com/docs/guides/database/connecting-to-postgres).
-4. In Authentication, disable public new-user signup and anonymous sign-in for this operator-provisioned demo. Add a user from **Authentication → Users**, set a strong password, and confirm the email through the dashboard's available control. Retain that user's UUID for library migration. Create separate users when demonstrating ownership isolation. The interface provides email/password sign-in; account creation/password reset are operator-managed.
+4. Keep anonymous sign-in disabled. For a closed email/password demo, disable public new-user signup and add users from **Authentication → Users**, setting a strong password and confirming the email. To admit new Google users, enable new-user signup and follow the Google setup below. Retain your initial user's UUID for library migration. Email/password sign-in remains available; password resets are operator-managed.
 5. Apply the schema and private bucket:
 
 ```powershell
@@ -260,6 +260,17 @@ VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLIC_PUBLISHABLE_KEY
 Add the final Vercel URL to Supabase's Auth URL settings and Render's exact CORS origins. Redeploy after changing Vite variables because they are compiled into the browser bundle. Do not set database passwords, secret/service-role keys, Pinecone, OpenAI or Tavily keys as `VITE_*` variables. The build rejects recognizable secret-key values in public Supabase key configuration.
 
 Sign in with the user created in Supabase. Session refresh is handled by the Supabase client; bearer credentials are sent only to the configured API origin. The frontend waits for cold startup, polls job progress and never retries an upload automatically. Briefly busy report reads retry with a bounded delay. Local one-origin Docker/native mode remains available without Supabase frontend variables.
+
+### Google sign-in
+
+The login page offers **Continue with Google** alongside email/password sign-in. It uses the same Supabase client and PKCE session storage. The return URL is the current frontend origin's `/` path; Supabase's browser SDK performs the code exchange once, restores the session and refreshes it. Callback codes/errors are removed from the browser URL. No Render callback endpoint or new frontend environment variable is required.
+
+1. In Google Cloud's Auth Platform, configure a **Web application** OAuth client and the consent screen. Add the deployed frontend origin as an authorized JavaScript origin. Add the **Supabase callback URL shown in Authentication → Sign In / Providers → Google** as Google's authorized redirect URI; it ends in `/auth/v1/callback`. This is the Supabase URL, not the Vercel return URL.
+2. Enter the Google client ID and client secret only in Supabase's Google provider settings and enable that provider. Keep Google client secrets out of Git, Vercel variables and frontend code. If the Google app is in Testing, add the intended Google accounts as test users or complete Google's audience/publishing setup.
+3. In Supabase Authentication URL settings, set Site URL to the production frontend and allow its exact root return URL. Separately authorize any development/preview origin you intentionally use. Keep the existing email provider enabled. Enable **Allow new users to sign up** for first-time Google accounts.
+4. Sign in with Google, reload the frontend to check session restoration, then sign out. Cancelling/denying consent or returning an expired code should show a retryable login error. Email/password sign-in remains usable.
+
+New Google users have ordinary-user permissions and immediately search the global corpus. The frontend does not request or assign roles; protected backend `st_admins` membership remains the sole administrator authority. Supabase may link a verified Google identity to an existing account with the same email; that existing account retains its own user ID and permissions. Private source/report ownership remains unchanged. See [Supabase's Google setup](https://supabase.com/docs/guides/auth/social-sign-in/auth-google).
 
 ### 7. Usage and verification
 
