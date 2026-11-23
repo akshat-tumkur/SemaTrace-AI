@@ -125,6 +125,40 @@ def account_permissions():
     return {"authentication_required": True, "user_id": actor, "is_admin": is_admin(actor)}
 
 
+class UsageBudget(BaseModel):
+    used: int
+    limit: int
+    remaining: int
+    global_remaining: int
+    available: int
+    enabled: bool
+    status: Literal["available", "disabled", "user_exhausted", "global_exhausted"]
+    message: str
+
+
+class DailyUsageResponse(BaseModel):
+    day: str
+    server_time: datetime
+    reset_at: datetime
+    timezone: str
+    usage: dict[Literal["analysis", "reference", "ai"], UsageBudget]
+
+
+@app.get("/api/usage", response_model=DailyUsageResponse)
+def get_daily_usage(response: Response):
+    if not cloud_enabled():
+        raise HTTPException(404, "Daily usage is available for signed-in cloud accounts.")
+    actor = current_owner()
+    if not actor:
+        raise HTTPException(401, "Sign in to view daily usage.")
+    from app.cloud.records import daily_usage
+
+    response.headers["Cache-Control"] = "private, no-store"
+    result = daily_usage(actor)
+    result["day"] = result["day"].isoformat()
+    return result
+
+
 class AnalysisSummary(BaseModel):
     analysis_id: str
     created_at: str | None = None

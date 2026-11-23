@@ -1,16 +1,19 @@
 import { supabase } from './auth'
 import { createApiTransport } from './apiTransport'
+import {usesDailyQuota,withUsageRefresh,USAGE_EVENT} from './usage'
 
 const base=(import.meta.env?.VITE_API_URL ?? '').replace(/\/$/,'')
 
 /** Send session credentials only to this deployment's configured API origin. */
 export async function apiFetch(input:string,options:RequestInit={}) {
-  return createApiTransport(base,location.origin,async()=>{
+  const send=()=>createApiTransport(base,location.origin,async()=>{
     if(!supabase)return null
     const {data,error}=await supabase.auth.getSession()
     if(error)throw new Error('Your sign-in session could not be refreshed. Sign in again.')
     return data.session?.access_token ?? null
   })(input,options)
+  if(!usesDailyQuota(input,options.method ?? 'GET',base,location.origin))return send()
+  return withUsageRefresh(send,phase=>window.dispatchEvent(new CustomEvent(USAGE_EVENT,{detail:phase})))
 }
 
 /** A cold start may return HTML or time out. Retry health reads, never uploads. */

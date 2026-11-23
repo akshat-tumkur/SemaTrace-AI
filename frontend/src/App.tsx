@@ -6,6 +6,7 @@ import { readJsonResponse } from './api'
 import SavedReports from './SavedReports'
 import SourceLibrary from './SourceLibrary'
 import ProductReport from './ProductReport'
+import DailyUsage from './DailyUsage'
 import type { Analysis,Job,ProductStatus } from './productTypes'
 import type { SimilarityOptions } from './similarity'
 const API=(import.meta.env.VITE_API_URL ?? '').replace(/\/$/,'')
@@ -59,6 +60,7 @@ export default function App(){
   function newAnalysis(){setAnalysis(null);setError('');setView('analyze');history.replaceState(null,'',location.pathname)}
   const working=busy || job?.status==='running'
   return <main className="shell product-shell"><header className="topbar"><button className="brand brand-button" onClick={()=>setView('analyze')}><span className="brand-mark">ST</span><span>SemaTrace <em>AI</em></span></button><nav className="main-nav" aria-label="Main navigation"><button aria-pressed={view==='analyze'} onClick={newAnalysis} disabled={!!job || busy}>New analysis</button>{status?.authentication_required?<><button aria-pressed={view==='global'} onClick={()=>setView('global')}>Global Source Library</button><button aria-pressed={view==='library'} onClick={()=>setView('library')}>My Private Sources</button></>:<button aria-pressed={view==='library'} onClick={()=>setView('library')}>Source library <span>{corpus?.source_origins ?? '-'}</span></button>}<button aria-pressed={view==='saved'} onClick={()=>setView('saved')}>{status?.authentication_required?'My Reports':'Saved reports'}</button></nav><div className="status-dot">{health}</div></header>
+    {status?.authentication_required&&<DailyUsage base={API}/>}
     {error&&<div className="global-error" role="alert">{error}</div>}
     {job&&<section className="job-progress" aria-live="polite"><div className="section-heading"><h2><LoaderCircle className="spin" size={22}/> {job.stage}</h2><span>{job.progress}%</span></div><progress max={100} value={job.progress}/><p>{job.filename} · You can refresh this page to reconnect to the same analysis.</p></section>}
     {view==='global'&&<SourceLibrary key="global" base={API} scope="global" canManage={administrator} enabled={administrator&&(status?.source_uploads_enabled ?? false)} allowRemoval={administrator} onChanged={()=>void refreshCorpus()}/>}

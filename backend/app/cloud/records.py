@@ -9,6 +9,72 @@ from app.cloud.client import Blobs, connect, owner_id
 from app.product.jobs import now
 
 REPORT_MAX_BYTES = 24 * 1024 * 1024
+DAILY_LIMITS = {"analysis": (10, 30), "reference": (3, 10), "ai": (0, 0), "web": (0, 0)}
+
+
+def quota_limits(operation):
+    user, total = DAILY_LIMITS[operation]
+    return (
+        int(os.getenv("SEMATRACE_" + operation.upper() + "_USER_DAILY_LIMIT", user)),
+        int(os.getenv("SEMATRACE_" + operation.upper() + "_GLOBAL_DAILY_LIMIT", total)),
+    )
+
+
+def daily_usage(owner):
+    """One read-only snapshot, using the same PostgreSQL day as reserve()."""
+    owner = owner_id(owner)
+    operations = ["analysis", "reference", "ai"]
+    with connect() as c:
+        row = c.execute(
+            """WITH today AS (
+              SELECT subject,operation,used FROM st_usage
+              WHERE day=CURRENT_DATE AND subject=ANY(%s) AND operation=ANY(%s)
+            ) SELECT CURRENT_DATE AS day,CURRENT_TIMESTAMP AS server_time,
+              (CURRENT_DATE+1)::timestamptz AS reset_at,current_setting('TimeZone') AS timezone,
+              coalesce((SELECT jsonb_object_agg(operation,used) FROM today WHERE subject=%s),'{}') AS personal,
+              coalesce((SELECT jsonb_object_agg(operation,used) FROM today WHERE subject='__global__'),'{}') AS shared""",
+            ([owner, "__global__"], operations, owner),
+        ).fetchone()
+    usage = {}
+    for operation in operations:
+        user_limit, global_limit = (max(0, n) for n in quota_limits(operation))
+        used = max(0, row["personal"].get(operation, 0))
+        remaining = max(0, user_limit - used)
+        global_remaining = max(0, global_limit - row["shared"].get(operation, 0))
+        enabled = user_limit > 0 and global_limit > 0
+        if operation == "ai":
+            enabled = enabled and bool(os.getenv("OPENAI_API_KEY"))
+        if operation == "reference":
+            enabled = (
+                enabled
+                and os.getenv("SEMATRACE_SOURCE_UPLOAD_ENABLED", "true").lower()
+                == "true"
+            )
+        if not enabled:
+            status, message = "disabled", "Disabled by this deployment."
+        elif remaining == 0:
+            status, message = "user_exhausted", "Your daily allowance is exhausted."
+        elif global_remaining == 0:
+            status, message = "global_exhausted", "Shared daily capacity is exhausted."
+        else:
+            status, message = "available", ""
+        usage[operation] = dict(
+            used=used,
+            limit=user_limit,
+            remaining=remaining,
+            global_remaining=global_remaining,
+            available=min(remaining, global_remaining) if enabled else 0,
+            enabled=enabled,
+            status=status,
+            message=message,
+        )
+    return dict(
+        day=row["day"],
+        server_time=row["server_time"],
+        reset_at=row["reset_at"],
+        timezone=row["timezone"],
+        usage=usage,
+    )
 
 
 def enforce_report_limit(value):
@@ -48,21 +114,8 @@ def reserve(owner, operation, user_limit, global_limit):
 
 
 def reserve_options(owner, options=None, operation="analysis"):
-    limits = {
-        "analysis": (10, 30),
-        "reference": (3, 10),
-        "ai": (0, 0),
-        "web": (0, 0),
-    }
-
     def take(op):
-        user, total = limits[op]
-        reserve(
-            owner,
-            op,
-            int(os.getenv("SEMATRACE_" + op.upper() + "_USER_DAILY_LIMIT", user)),
-            int(os.getenv("SEMATRACE_" + op.upper() + "_GLOBAL_DAILY_LIMIT", total)),
-        )
+        reserve(owner, op, *quota_limits(op))
 
     take(operation)
     if options:
