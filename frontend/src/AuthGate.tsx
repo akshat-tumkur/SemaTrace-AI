@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from './auth'
 import { authCallback,restoreAuthSession,startGoogleSignIn } from './authFlow'
 import App from './App'
+import Brand from './Brand'
 
 export default function AuthGate(){
   const [session,setSession]=useState<Session|null>(null),[loaded,setLoaded]=useState(!supabase)
@@ -61,7 +62,7 @@ export default function AuthGate(){
   }
   if(!loaded)return <main className="auth-panel" role="status">Restoring your sign-in session…</main>
   if(session)return <><div className="account-bar"><span>Signed in: {session.user.email}</span><button disabled={!!busy} onClick={()=>void signOut()}>{busy==='signout'?'Signing out…':'Sign out'}</button>{error&&<span role="alert" className="error">{error}</span>}</div><App key={session.user.id}/></>
-  return <main className="auth-panel"><p className="eyebrow">SEMATRACE AI · PRIVATE WORKSPACE</p><h1>Sign in to compare documents.</h1><p>Search the shared global corpus and your private references. Your submissions and reports remain private to your account. Cloud storage uses Supabase and vector retrieval uses Pinecone. OpenAI and web discovery require separate opt-in.</p>
+  return <main className="auth-panel"><div className="brand auth-brand"><Brand/></div><p className="eyebrow">SEMATRACE AI · PRIVATE WORKSPACE</p><h1>Sign in to compare documents.</h1><p>Search the shared global corpus and your private references. Your submissions and reports remain private to your account. Cloud storage uses Supabase and vector retrieval uses Pinecone. OpenAI and web discovery require separate opt-in.</p>
     <button type="button" className="google-sign-in" disabled={!!busy} onClick={()=>void google()}>{busy==='google'?'Connecting to Google…':'Continue with Google'}</button>
     <p className="auth-divider">or sign in with email</p>
     <form onSubmit={e=>{e.preventDefault();void signIn()}}><label>Email<input type="email" autoComplete="username" required disabled={!!busy} value={email} onChange={e=>setEmail(e.target.value)}/></label><label>Password<input type="password" autoComplete="current-password" required disabled={!!busy} value={password} onChange={e=>setPassword(e.target.value)}/></label><button className="primary-button" disabled={!!busy}>{busy==='password'?'Signing in…':'Sign in'}</button></form>
